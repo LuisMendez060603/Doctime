@@ -30,7 +30,7 @@ class _DetalleCita2State extends State<DetalleCita2> {
   List<String> horasDisponibles = [];
 
   Future<void> _agendarCita() async {
-    final url = Uri.parse('http://localhost/doctime/agendar_cita.php');
+    final url = Uri.parse('http://localhost/doctime/BD/agendar_cita.php');
 
     try {
       final response = await http.post(
@@ -180,7 +180,7 @@ class _DetalleCita2State extends State<DetalleCita2> {
 
   Future<void> _getHorasDisponibles() async {
     final url =
-        Uri.parse('http://localhost/doctime/obtener_horas_disponibles.php');
+        Uri.parse('http://localhost/doctime/BD/obtener_horas_disponibles.php');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},

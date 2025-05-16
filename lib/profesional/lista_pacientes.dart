@@ -29,7 +29,7 @@ class _ListaPacientesPageState extends State<ListaPacientesPage> {
 
   Future<void> obtenerPacientes() async {
     try {
-      final response = await http.get(Uri.parse('http://localhost/doctime/obtener_pacientes.php'));
+      final response = await http.get(Uri.parse('http://localhost/doctime/BD/obtener_pacientes.php'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);

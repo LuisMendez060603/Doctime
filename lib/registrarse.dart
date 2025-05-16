@@ -27,7 +27,7 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
       return;
     }
 
-    final url = Uri.parse('http://localhost/doctime/registrar.php');
+    final url = Uri.parse('http://localhost/doctime/BD/registrar.php');
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},

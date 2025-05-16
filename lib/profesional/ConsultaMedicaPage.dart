@@ -34,7 +34,7 @@ class _ConsultaMedicaPageState extends State<ConsultaMedicaPage> {
   }
 
   Future<void> obtenerDatosPaciente() async {
-    const url = 'http://localhost/doctime/obtener_datos_paciente.php';
+    const url = 'http://localhost/doctime/BD/obtener_datos_paciente.php';
 
     final response = await http.post(
       Uri.parse(url),
@@ -103,7 +103,7 @@ class _ConsultaMedicaPageState extends State<ConsultaMedicaPage> {
       return; // No guarda si los campos están vacíos
     }
 
-    const url = 'http://localhost/doctime/guardar_consulta.php';
+    const url = 'http://localhost/doctime/BD/guardar_consulta.php';
 
     try {
       final response = await http.post(

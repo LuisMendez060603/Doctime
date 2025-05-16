@@ -30,7 +30,7 @@ class _DetalleCita1State extends State<DetalleCita1> {
 
   Future<void> _fetchPatientData() async {
     final response = await http.post(
-      Uri.parse('http://localhost/doctime/iniciar_sesion.php'),
+      Uri.parse('http://localhost/doctime/BD/iniciar_sesion.php'),
       headers: {"Content-Type": "application/json"},
       body: json.encode({
         'correo': widget.correo,
@@ -69,7 +69,7 @@ class _DetalleCita1State extends State<DetalleCita1> {
     final clavePaciente = prefs.getString('clave_paciente') ?? '';
 
     final response = await http.post(
-      Uri.parse('http://localhost/doctime/actualizar_paciente.php'),
+      Uri.parse('http://localhost/doctime/BD/actualizar_paciente.php'),
       headers: {"Content-Type": "application/json"},
       body: json.encode({
         'clave_paciente': clavePaciente,

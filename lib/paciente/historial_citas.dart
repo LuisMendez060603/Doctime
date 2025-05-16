@@ -26,7 +26,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
   }
 
   Future<void> obtenerCitas() async {
-    final url = Uri.parse('http://localhost/doctime/obtener_citas_paciente.php');
+    final url = Uri.parse('http://localhost/doctime/BD/obtener_citas_paciente.php');
     final response = await http.post(
       url,
       body: jsonEncode({
@@ -39,6 +39,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
     final data = jsonDecode(response.body);
     if (data['success']) {
       final hoy = DateTime.now();
+      final hoySinHora = DateTime(hoy.year, hoy.month, hoy.day);
       final citas = List<Map<String, dynamic>>.from(data['citas']);
 
       List<Map<String, dynamic>> pendientes = [];
@@ -46,9 +47,10 @@ class _HistorialCitasState extends State<HistorialCitas> {
 
       for (var cita in citas) {
         final fecha = DateTime.parse(cita['fecha']);
+        final fechaSinHora = DateTime(fecha.year, fecha.month, fecha.day);
         final estado = cita['estado'] ?? 'Activa';
 
-        if (estado == 'Cancelada' || fecha.isBefore(hoy)) {
+        if (estado == 'Cancelada' || fechaSinHora.isBefore(hoySinHora)) {
           pasadas.add(cita);
         } else {
           pendientes.add(cita);
@@ -69,7 +71,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
   }
 
   Future<void> cancelarCita(Map<String, dynamic> cita) async {
-    final url = Uri.parse('http://localhost/doctime/cancelar_cita.php');
+    final url = Uri.parse('http://localhost/doctime/BD/cancelar_cita.php');
     final response = await http.post(
       url,
       body: jsonEncode({

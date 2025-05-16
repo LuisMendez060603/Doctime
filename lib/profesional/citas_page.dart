@@ -29,7 +29,7 @@ class _CitasPageState extends State<CitasPage> {
   }
 
   Future<void> obtenerCitas() async {
-    const String url = 'http://localhost/doctime/obtener_citas_profesional.php';
+    const String url = 'http://localhost/doctime/BD/obtener_citas_profesional.php';
 
     try {
       final response = await http.post(
@@ -357,7 +357,7 @@ class _CitasPageState extends State<CitasPage> {
                                                   TextButton(
                                                     onPressed: () async {
                                                       final claveCita = cita['Clave_Cita'];
-                                                      final url = 'http://localhost/doctime/confirmar_cita.php';
+                                                      final url = 'http://localhost/doctime/BD/confirmar_cita.php';
 
                                                       try {
                                                         final response = await http.post(
@@ -424,7 +424,7 @@ class _CitasPageState extends State<CitasPage> {
                                                   TextButton(
                                                     onPressed: () async {
                                                       final claveCita = cita['Clave_Cita'];
-                                                      final url = 'http://localhost/doctime/cancelar_cita_profesional.php';
+                                                      final url = 'http://localhost/doctime/BD/cancelar_cita_profesional.php';
 
                                                       try {
                                                         final response = await http.post(

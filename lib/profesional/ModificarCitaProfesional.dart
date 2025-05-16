@@ -37,7 +37,7 @@ class _ModificarCitaProfesionalState extends State<ModificarCitaProfesional> {
   }
 
   Future<void> _getHorasDisponibles() async {
-    final url = Uri.parse('http://localhost/doctime/obtener_horas_disponibles.php');
+    final url = Uri.parse('http://localhost/doctime/BD/obtener_horas_disponibles.php');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -63,7 +63,7 @@ class _ModificarCitaProfesionalState extends State<ModificarCitaProfesional> {
   }
 
   Future<void> modificarCita() async {
-    final url = Uri.parse('http://localhost/doctime/modificar_cita_profesional.php');
+    final url = Uri.parse('http://localhost/doctime/BD/modificar_cita_profesional.php');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},

@@ -18,7 +18,7 @@ class _IniciarSesionPageState extends State<IniciarSesionPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   Future<void> _iniciarSesion() async {
-    final url = Uri.parse('http://localhost/doctime/iniciar_sesion.php');
+    final url = Uri.parse('http://localhost/doctime/BD/iniciar_sesion.php');
 
     final response = await http.post(
       url,
