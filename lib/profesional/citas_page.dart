@@ -423,32 +423,35 @@ class _CitasPageState extends State<CitasPage> {
                                                 if (cita['Estado'] != 'Cancelada' && !cita['botonesDeshabilitados'])
                                                   TextButton(
                                                     onPressed: () async {
-                                                      final claveCita = cita['Clave_Cita'];
-                                                      final url = 'http://localhost/doctime/BD/cancelar_cita_profesional.php';
+                                                      final confirmar = await mostrarDialogoConfirmacion(context);
+                                                      if (confirmar == true) {
+                                                        final claveCita = cita['Clave_Cita'];
+                                                        final url = 'http://localhost/doctime/BD/cancelar_cita_profesional.php';
 
-                                                      try {
-                                                        final response = await http.post(
-                                                          Uri.parse(url),
-                                                          headers: {'Content-Type': 'application/json'},
-                                                          body: jsonEncode({'clave_cita': claveCita}),
-                                                        );
+                                                        try {
+                                                          final response = await http.post(
+                                                            Uri.parse(url),
+                                                            headers: {'Content-Type': 'application/json'},
+                                                            body: jsonEncode({'clave_cita': claveCita}),
+                                                          );
 
-                                                        final result = jsonDecode(response.body);
-                                                        if (result['success']) {
-                                                          setState(() {
-                                                            cita['Estado'] = 'Cancelada'; // Cambiar el estado a "Cancelada"
-                                                            cita['botonesDeshabilitados'] = true; // Deshabilitar los botones solo para esta cita
-                                                          });
-                                                          _showSuccessDialog('¡Cita Cancelada!', 'img/Imagen5.png');
-                                                        } else {
+                                                          final result = jsonDecode(response.body);
+                                                          if (result['success']) {
+                                                            setState(() {
+                                                              cita['Estado'] = 'Cancelada';
+                                                              cita['botonesDeshabilitados'] = true;
+                                                            });
+                                                            _showSuccessDialog('¡Cita Cancelada!', 'img/Imagen5.png');
+                                                          } else {
+                                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                              SnackBar(content: Text('Error: ${result['message']}')),
+                                                            );
+                                                          }
+                                                        } catch (e) {
                                                           ScaffoldMessenger.of(context).showSnackBar(
-                                                            SnackBar(content: Text('Error: ${result['message']}')),
+                                                            const SnackBar(content: Text('Error al cancelar la cita')),
                                                           );
                                                         }
-                                                      } catch (e) {
-                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                          const SnackBar(content: Text('Error al cancelar la cita')),
-                                                        );
                                                       }
                                                     },
                                                     style: TextButton.styleFrom(
@@ -495,6 +498,86 @@ class _CitasPageState extends State<CitasPage> {
       ),
     );
   }
+}
+
+// Coloca esta función fuera de la clase _CitasPageState (por ejemplo, al final del archivo)
+Future<bool?> mostrarDialogoConfirmacion(BuildContext context) async {
+  final width = MediaQuery.of(context).size.width;
+  final isSmallScreen = width < 600;
+
+  return showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            'img/Imagen4.png',
+            width: isSmallScreen ? 100 : 150,
+            height: isSmallScreen ? 100 : 150,
+            fit: BoxFit.contain,
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            '¿Estás seguro que deseas cancelar esta cita?',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 25),
+          Column(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00ADFF),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'No',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00ADFF),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Sí, cancelar',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 

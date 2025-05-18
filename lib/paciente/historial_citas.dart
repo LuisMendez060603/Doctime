@@ -71,6 +71,85 @@ class _HistorialCitasState extends State<HistorialCitas> {
   }
 
   Future<void> cancelarCita(Map<String, dynamic> cita) async {
+    final width = MediaQuery.of(context).size.width;
+    final isSmallScreen = width < 600;
+
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'img/Imagen4.png',
+              width: isSmallScreen ? 100 : 150,
+              height: isSmallScreen ? 100 : 150,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              '¿Estás seguro que deseas cancelar esta cita?',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 25),
+            Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF00ADFF),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      'No',
+                      style: TextStyle(
+                        fontSize: isSmallScreen ? 14 : 16,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF00ADFF),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      'Sí, cancelar',
+                      style: TextStyle(
+                        fontSize: isSmallScreen ? 14 : 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (confirmar != true) return;
+
     final url = Uri.parse('http://localhost/doctime/BD/cancelar_cita.php');
     final response = await http.post(
       url,
