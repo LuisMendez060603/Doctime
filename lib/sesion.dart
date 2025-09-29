@@ -175,50 +175,41 @@ class _IniciarSesionPageState extends State<IniciarSesionPage> {
               Container(
                 width: double.infinity,
                 height: 110,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Menos espacio vertical
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 253,
+                      width: 80,
                       height: 80,
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 80,
-                            height: 80,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage("img/Imagen1.png"),
-                                fit: BoxFit.contain,
+                      padding: const EdgeInsets.all(5),
+                      child: Image.asset("img/logo.png"),
+                    ),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 5), // Solo a la izquierda
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text(
+                              'DocTime',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold, // Más negrita
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                'DocTime',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontFamily: 'Euclid Circular A',
-                                ),
+                            Text(
+                              'Consultas y citas médicas',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
                               ),
-                              Text(
-                                'Consultas y citas médicas',
-                                style: TextStyle(
-                                  color: Color(0xFFBABABA),
-                                  fontSize: 12,
-                                  fontFamily: 'Inter',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -228,8 +219,8 @@ class _IniciarSesionPageState extends State<IniciarSesionPage> {
               const Text(
                 'Iniciar Sesión',
                 style: TextStyle(
-                  color: Color(0xFF00ADFF),
-                  fontSize: 24,
+                  color: const Color(0xFF0077C2),
+                  fontSize: 23,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -240,16 +231,20 @@ class _IniciarSesionPageState extends State<IniciarSesionPage> {
                   children: [
                     TextField(
                       controller: _correoController,
+                      style: const TextStyle(color: Colors.black), // Texto ingresado en negro
                       decoration: const InputDecoration(
                         labelText: 'Correo Electrónico',
+                        labelStyle: TextStyle(color: Colors.black), // Label en negro
                         border: OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 10),
                     TextField(
                       controller: _passwordController,
+                      style: const TextStyle(color: Colors.black), // Texto ingresado en negro
                       decoration: const InputDecoration(
                         labelText: 'Contraseña',
+                        labelStyle: TextStyle(color: Colors.black), // Label en negro
                         border: OutlineInputBorder(),
                       ),
                       obscureText: true,
@@ -257,16 +252,21 @@ class _IniciarSesionPageState extends State<IniciarSesionPage> {
                     const SizedBox(height: 15),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00ADFF),
+                        backgroundColor: const Color(0xFF0077C2),
                         minimumSize: const Size(332, 47),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(10), // Más redondeado
                         ),
                       ),
                       onPressed: _iniciarSesion,
                       child: const Text(
                         'Iniciar Sesión',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16, // Más grande
+                          fontWeight: FontWeight.bold, // Más gruesa
+                          fontFamily: 'Euclid Circular A', // Negritas
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),

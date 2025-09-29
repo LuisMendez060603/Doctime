@@ -133,15 +133,7 @@ class MyHomePage extends StatelessWidget {
                         ),
                       ),
                     SizedBox(height: 15),
-                    Text(
-                      'Inicia sesión o regístrate para poder agendar tu cita\ny ponernos en contacto contigo.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 13,
-                        fontFamily: 'Euclid Circular A',
-                      ),
-                    ),
+                    
                   ],
                 ),
               ),
