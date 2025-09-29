@@ -43,7 +43,7 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor:  Colors.white,
       body: Center(
         child: Container(
           width: 420,
@@ -57,65 +57,66 @@ class MyHomePage extends StatelessWidget {
               // Logo y título
               Container(
                 width: double.infinity,
-                height: 110,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 253,
-                      height: 80,
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                      decoration: const ShapeDecoration(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(50),
-                            topRight: Radius.circular(50),
-                          ),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 80,
-                            height: 80,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage("img/Imagen1.png"),
-                                fit: BoxFit.contain,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+                          decoration: const ShapeDecoration(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(50),
+                                topRight: Radius.circular(50),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 10),
-                          Column(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                'DocTime',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontFamily: 'Euclid Circular A',
-                                ),
+                            children: [
+                              Container(
+                                width: 80,
+                                height: 80,
+                                padding: const EdgeInsets.all(5),
+                                child: Image.asset("img/logo.png"),
                               ),
-                              Text(
-                                'Consultas y citas médicas',
-                                style: TextStyle(
-                                  color: Color(0xFFBABABA),
-                                  fontSize: 12,
-                                  fontFamily: 'Inter',
+                              Flexible(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: const Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'DocTime',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Consultas y citas médicas',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 5),
+              const SizedBox(height: 0),
               // Mensaje de bienvenida
               Container(
                 width: double.infinity,
@@ -123,20 +124,21 @@ class MyHomePage extends StatelessWidget {
                 child: Column(
                   children: const [
                     Text(
-                      '¿Requieres Atención Médica?',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontFamily: 'Euclid Circular A',
+                        '¿Requieres Atención Médica?',
+                        style: TextStyle(
+                         color: const Color(0xFF0077C2),
+                          fontSize: 23,
+                          fontFamily: 'Euclid Circular A',
+                          fontWeight: FontWeight.bold, // 👈 Negritas
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 15),
                     Text(
                       'Inicia sesión o regístrate para poder agendar tu cita\ny ponernos en contacto contigo.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Color(0xFFBABABA),
-                        fontSize: 12,
+                        color: Colors.black,
+                        fontSize: 13,
                         fontFamily: 'Euclid Circular A',
                       ),
                     ),
@@ -153,10 +155,10 @@ class MyHomePage extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00ADFF),
+                        backgroundColor: const Color(0xFF0077C2),
                         minimumSize: const Size(332, 47),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                       onPressed: () {
@@ -168,16 +170,21 @@ class MyHomePage extends StatelessWidget {
                       },
                       child: const Text(
                         'Iniciar Sesión',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16, // Más grande
+                          fontWeight: FontWeight.bold, // Más gruesa
+                          fontFamily: 'Euclid Circular A', // Opcional, si la tienes en tu proyecto
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00ADFF),
+                       backgroundColor: const Color(0xFF0077C2),
                         minimumSize: const Size(332, 47),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                       onPressed: () {
@@ -189,7 +196,12 @@ class MyHomePage extends StatelessWidget {
                       },
                       child: const Text(
                         'Registrarse',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16, // Más grande
+                          fontWeight: FontWeight.bold, // Más gruesa
+                          fontFamily: 'Euclid Circular A', // Opcional, si la tienes en tu proyecto
+                        ),
                       ),
                     ),
                   ],

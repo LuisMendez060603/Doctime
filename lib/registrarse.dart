@@ -133,7 +133,14 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Registro')),
+      appBar: AppBar(
+        backgroundColor:  Colors.white,// Color igual al fondo
+        elevation: 0, // Sin sombra para que se vea plano
+        iconTheme: const IconThemeData(
+         color: const Color(0xFF0077C2), // Cambia el color de la flecha aquí (puedes usar Colors.white si prefieres)
+        ),
+      ),
+      backgroundColor: Colors.white, // <-- Color de fondo personalizado
       body: SingleChildScrollView(
         child: Align(
           alignment: Alignment.topCenter,
@@ -211,10 +218,10 @@ class Frame9 extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
-                                width: 70,
-                                height: 70,
+                                width: 80,
+                                height: 80,
                                 padding: const EdgeInsets.all(5),
-                                child: Image.asset("img/Imagen1.png", fit: BoxFit.cover),
+                                child: Image.asset("img/logo.png"),
                               ),
                               Flexible(
                                 child: Padding(
@@ -226,15 +233,15 @@ class Frame9 extends StatelessWidget {
                                         'DocTime',
                                         style: TextStyle(
                                           color: Colors.black,
-                                          fontSize: 14,
+                                          fontSize: 17,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
                                       Text(
                                         'Consultas y citas médicas',
                                         style: TextStyle(
-                                          color: Color(0xFF757575),
-                                          fontSize: 10,
+                                          color: Colors.black,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -254,9 +261,11 @@ class Frame9 extends StatelessWidget {
               const Text(
                 'Registrarse',
                 style: TextStyle(
-                  color: Color(0xFF00ADFF),
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF0077C2),
+                  fontSize: 23,
+                  fontFamily: 'Euclid Circular A',
+                  fontWeight: FontWeight.bold,
+                  
                 ),
               ),
               const SizedBox(height: 6),
@@ -272,16 +281,17 @@ class Frame9 extends StatelessWidget {
                   width: double.infinity,
                   height: 40,
                   decoration: const BoxDecoration(
-                    color: Color(0xFF00ADFF),
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    color: const Color(0xFF0077C2),
+                    borderRadius: BorderRadius.all(Radius.circular(10)), // <-- Cambiado a 10
                   ),
                   child: const Center(
                     child: Text(
                       'Registrarse',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          fontSize: 16, // Más grande
+                          fontWeight: FontWeight.bold, // Más gruesa
+                          fontFamily: 'Euclid Circular A',
                       ),
                     ),
                   ),
@@ -308,7 +318,7 @@ class Frame9 extends StatelessWidget {
           Text(
             label,
             style: const TextStyle(
-              color: Colors.black,
+              color: Colors.black, // <-- Letras en negro
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
@@ -317,6 +327,7 @@ class Frame9 extends StatelessWidget {
           TextField(
             controller: controller,
             obscureText: obscureText,
+            style: const TextStyle(color: Colors.black), // <-- Texto ingresado en negro
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: const TextStyle(color: Color(0xFF9E9E9E)),
