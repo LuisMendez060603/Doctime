@@ -105,17 +105,19 @@ class _HistorialCitasState extends State<HistorialCitas> {
                   child: ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(false),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00ADFF),
+                      backgroundColor: const Color(0xFF0077C2), // Azul principal
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10), // Esquinas redondeadas
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'No',
                       style: TextStyle(
-                        fontSize: isSmallScreen ? 14 : 16,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold, // Negrita
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -126,17 +128,19 @@ class _HistorialCitasState extends State<HistorialCitas> {
                   child: ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(true),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00ADFF),
+                      backgroundColor: const Color(0xFF0077C2), // Azul principal
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10), // Esquinas redondeadas
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Sí, cancelar',
                       style: TextStyle(
-                        fontSize: isSmallScreen ? 14 : 16,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold, // Negrita
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -201,7 +205,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
                           height: isSmallScreen ? 50 : 60,
                           decoration: const BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage("img/Imagen1.png"),
+                              image: AssetImage("img/logo.png"),
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -213,17 +217,17 @@ class _HistorialCitasState extends State<HistorialCitas> {
                             Text(
                               'DocTime',
                               style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 18,
-                                fontFamily: 'Euclid Circular A',
+                                color: Colors.black,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
                               'Consultas y citas médicas',
                               style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                                fontFamily: 'Inter',
+                                color: Colors.black,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
@@ -320,7 +324,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00ADFF),
+                    backgroundColor: const Color(0xFF0077C2),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),

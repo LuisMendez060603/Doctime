@@ -226,7 +226,7 @@ class _DetalleCita2State extends State<DetalleCita2> {
             Text(
               'Agendar Cita Médica',
               style: const TextStyle(
-                color: Color(0xFF00ADFF),
+                color: const Color(0xFF0077C2),
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Euclid Circular A',
@@ -314,7 +314,7 @@ class _DetalleCita2State extends State<DetalleCita2> {
               height: 50,
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("img/Imagen1.png"),
+                  image: AssetImage("img/logo.png"),
                   fit: BoxFit.contain,
                 ),
               ),
@@ -326,17 +326,17 @@ class _DetalleCita2State extends State<DetalleCita2> {
                 Text(
                   'DocTime',
                   style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: 14,
-                    fontFamily: 'Euclid Circular A',
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   'Consultas y citas médicas',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 10,
-                    fontFamily: 'Inter',
+                        color: Colors.black,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -387,7 +387,7 @@ class _DetalleCita2State extends State<DetalleCita2> {
           fontWeight: FontWeight.bold,
           color: Colors.grey,
         ),
-        prefixIcon: Icon(icon, color: const Color(0xFF00ADFF)),
+        prefixIcon: Icon(icon, color: const Color(0xFF0077C2)),
         filled: true,
         fillColor: const Color(0xFFE1F5FE),
         border: OutlineInputBorder(
@@ -408,7 +408,7 @@ class _DetalleCita2State extends State<DetalleCita2> {
           }
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF00ADFF),
+          backgroundColor: const Color(0xFF0077C2),
           padding: const EdgeInsets.symmetric(vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -430,7 +430,7 @@ class _DetalleCita2State extends State<DetalleCita2> {
           Navigator.pop(context);
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF00ADFF),
+          backgroundColor: const Color(0xFF0077C2),
           padding: const EdgeInsets.symmetric(vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),

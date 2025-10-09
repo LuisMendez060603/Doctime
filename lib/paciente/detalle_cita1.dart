@@ -118,7 +118,7 @@ class _DetalleCita1State extends State<DetalleCita1> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Image.asset(
-                'img/Imagen7.png', // Asegúrate que esta imagen esté en assets
+                'img/Imagen5.png', // Asegúrate que esta imagen esté en assets
                 height: 100,
                 width: 100,
               ),
@@ -204,7 +204,7 @@ class _DetalleCita1State extends State<DetalleCita1> {
                       height: isSmallScreen ? 50 : 60,
                       decoration: const BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage("img/Imagen1.png"),
+                          image: AssetImage("img/logo.png"),
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -216,17 +216,17 @@ class _DetalleCita1State extends State<DetalleCita1> {
                         Text(
                           'DocTime',
                           style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 14,
-                            fontFamily: 'Euclid Circular A',
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           'Consultas y citas médicas',
                           style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 10,
-                            fontFamily: 'Inter',
+                            color: Colors.black,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -263,7 +263,7 @@ class _DetalleCita1State extends State<DetalleCita1> {
             Text(
               'Agendar Cita Médica',
               style: TextStyle(
-                color: const Color(0xFF00ADFF),
+                color: const Color(0xFF0077C2),
                 fontSize: isSmallScreen ? 18 : 20,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Euclid Circular A',
@@ -317,7 +317,7 @@ class _DetalleCita1State extends State<DetalleCita1> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00ADFF),
+                      backgroundColor: const Color(0xFF0077C2),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -348,7 +348,7 @@ class _DetalleCita1State extends State<DetalleCita1> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00ADFF),
+                      backgroundColor: const Color(0xFF0077C2),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

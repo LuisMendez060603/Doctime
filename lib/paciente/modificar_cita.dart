@@ -286,7 +286,7 @@ class _ModificarCitaState extends State<ModificarCita> {
                 height: 50,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage("img/Imagen1.png"),
+                    image: AssetImage("img/logo.png"),
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -299,17 +299,17 @@ class _ModificarCitaState extends State<ModificarCita> {
                     Text(
                       'DocTime',
                       style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 14,
-                        fontFamily: 'Euclid Circular A',
+                                color: Colors.black,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       'Consultas y citas médicas',
                       style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 10,
-                        fontFamily: 'Inter',
+                                color: Colors.black,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -378,7 +378,7 @@ class _ModificarCitaState extends State<ModificarCita> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF00ADFF),
+        backgroundColor: const Color(0xFF0077C2),
         padding: const EdgeInsets.symmetric(vertical: 14),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -410,7 +410,7 @@ class _ModificarCitaState extends State<ModificarCita> {
           fontWeight: FontWeight.bold,
           color: Colors.grey,
         ),
-        prefixIcon: Icon(icon, color: const Color(0xFF00ADFF)),
+        prefixIcon: Icon(icon, color: const Color(0xFF0077C2)),
         filled: true,
         fillColor: const Color(0xFFE1F5FE),
         border: OutlineInputBorder(

@@ -94,6 +94,16 @@ class _IniciarSesionPageState extends State<IniciarSesionPage> {
             ],
           ),
         ),
+        actions: <Widget>[
+          Center(
+            child: TextButton(
+              child: const Text('Aceptar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+        ],
       ),
     );
 
@@ -151,6 +161,11 @@ class _IniciarSesionPageState extends State<IniciarSesionPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white, // Fondo blanco
+        elevation: 0, // Sin sombra
+        iconTheme: const IconThemeData(
+          color: Color(0xFF0077C2), // Color de la flecha
+        ),
         title: const SizedBox.shrink(),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

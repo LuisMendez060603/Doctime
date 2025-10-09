@@ -61,7 +61,7 @@ class Header extends StatelessWidget {
                 height: 50,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage("img/Imagen1.png"),
+                    image: AssetImage("img/logo.png"),
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -74,17 +74,17 @@ class Header extends StatelessWidget {
                     Text(
                       'DocTime',
                       style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 14,
-                        fontFamily: 'Euclid Circular A',
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       'Consultas y citas médicas',
                       style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 10,
-                        fontFamily: 'Inter',
+                        color: Colors.black,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -135,9 +135,9 @@ class Frame14 extends StatelessWidget {
                     'Sistema de Citas\nMedicas',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.lightBlueAccent,
-                      fontSize: 24,
-                      fontFamily: 'Euclid Circular A',
+                      color: const Color(0xFF0077C2),
+                      fontSize: 23,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -145,7 +145,7 @@ class Frame14 extends StatelessWidget {
                     'Agenda tu cita médica de manera rápida y sencilla',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.grey[600],
+                      color: Colors.black,
                       fontSize: 15,
                       fontFamily: 'Euclid Circular A',
                     ),
@@ -186,7 +186,7 @@ class AgendaCard extends StatelessWidget {
             width: 50,
             height: 50,
             decoration: const BoxDecoration(
-              color: Color(0xFF00ADFF),
+              color: const Color(0xFF0077C2),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -202,7 +202,7 @@ class AgendaCard extends StatelessWidget {
             'Agenda tu cita',
             style: TextStyle(
               fontSize: 20,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
           ),
@@ -213,7 +213,7 @@ class AgendaCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: Colors.grey,
+              color: Colors.black,
             ),
           ),
           const SizedBox(height: 10),
@@ -227,7 +227,7 @@ class AgendaCard extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF00ADFF),
+              backgroundColor: const Color(0xFF0077C2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5),
               ),
@@ -274,7 +274,7 @@ class HistorialCard extends StatelessWidget {
             width: 50,
             height: 50,
             decoration: const BoxDecoration(
-              color: Color(0xFF00ADFF),
+              color: const Color(0xFF0077C2),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -290,7 +290,7 @@ class HistorialCard extends StatelessWidget {
             'Historial de citas',
             style: TextStyle(
               fontSize: 20,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
           ),
@@ -301,7 +301,7 @@ class HistorialCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: Colors.grey,
+              color: Colors.black,
             ),
           ),
           const SizedBox(height: 10),
@@ -315,7 +315,7 @@ class HistorialCard extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF00ADFF),
+              backgroundColor: const Color(0xFF0077C2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5),
               ),
