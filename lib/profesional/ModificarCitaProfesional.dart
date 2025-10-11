@@ -129,7 +129,7 @@ class _ModificarCitaProfesionalState extends State<ModificarCitaProfesional> {
                 'Aceptar',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.blue,
+                  color: Color(0xFF0077C2),
                   fontSize: 16,
                 ),
               ),
@@ -274,7 +274,7 @@ class _ModificarCitaProfesionalState extends State<ModificarCitaProfesional> {
                         height: 50,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage("img/Imagen1.png"),
+                            image: AssetImage("img/logo.png"),
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -287,17 +287,17 @@ class _ModificarCitaProfesionalState extends State<ModificarCitaProfesional> {
                             Text(
                               'DocTime',
                               style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 14,
-                                fontFamily: 'Euclid Circular A',
+                                color: Colors.black,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
                               'Consultas y citas médicas',
                               style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 10,
-                                fontFamily: 'Inter',
+                                color: Colors.black,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
@@ -353,7 +353,7 @@ class _ModificarCitaProfesionalState extends State<ModificarCitaProfesional> {
                       fontWeight: FontWeight.bold,
                       color: Colors.grey,
                     ),
-                    prefixIcon: const Icon(Icons.date_range, color: Color(0xFF00ADFF)),
+                    prefixIcon: const Icon(Icons.date_range, color: Color(0xFF0077C2)),
                     filled: true,
                     fillColor: const Color(0xFFE1F5FE),
                     border: OutlineInputBorder(
@@ -382,7 +382,7 @@ class _ModificarCitaProfesionalState extends State<ModificarCitaProfesional> {
                       fontWeight: FontWeight.bold,
                       color: Colors.grey,
                     ),
-                    prefixIcon: const Icon(Icons.access_time, color: Color(0xFF00ADFF)),
+                    prefixIcon: const Icon(Icons.access_time, color: Color(0xFF0077C2)),
                     filled: true,
                     fillColor: const Color(0xFFE1F5FE),
                     border: OutlineInputBorder(
@@ -397,7 +397,7 @@ class _ModificarCitaProfesionalState extends State<ModificarCitaProfesional> {
                   child: ElevatedButton(
                     onPressed: modificarCita,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00ADFF),
+                      backgroundColor: const Color(0xFF0077C2),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -417,7 +417,7 @@ class _ModificarCitaProfesionalState extends State<ModificarCitaProfesional> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00ADFF),
+                      backgroundColor: const Color(0xFF0077C2),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

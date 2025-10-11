@@ -1,7 +1,7 @@
 flutter run -d Windows
 
 
-subir cambios
+"subir cambios"
 
 git add .
 

@@ -78,7 +78,7 @@ class _ListaPacientesPageState extends State<ListaPacientesPage> {
                           height: 50,
                           decoration: const BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage("img/Imagen1.png"),
+                              image: AssetImage("img/logo.png"),
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -91,17 +91,17 @@ class _ListaPacientesPageState extends State<ListaPacientesPage> {
                               Text(
                                 'DocTime',
                                 style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 14,
-                                  fontFamily: 'Euclid Circular A',
+                                  color: Colors.black,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 'Consultas y citas médicas',
                                 style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                  fontFamily: 'Inter',
+                                  color: Colors.black,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -141,7 +141,11 @@ class _ListaPacientesPageState extends State<ListaPacientesPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Lista de Pacientes",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: const Color(0xFF0077C2),
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -164,7 +168,7 @@ class _ListaPacientesPageState extends State<ListaPacientesPage> {
                                   return Card(
                                     margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                     child: ListTile(
-                                      leading: const Icon(Icons.person, color: Color(0xFF00ADFF)),
+                                      leading: const Icon(Icons.person, color: const Color(0xFF0077C2)),
                                       title: Text('${paciente['Nombre']} ${paciente['Apellido']}'),
                                       subtitle: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,7 +193,7 @@ class _ListaPacientesPageState extends State<ListaPacientesPage> {
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00ADFF),
+                          backgroundColor: const Color(0xFF0077C2),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -197,7 +201,9 @@ class _ListaPacientesPageState extends State<ListaPacientesPage> {
                         ),
                         child: const Text(
                           'Volver',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
+                          style: TextStyle(
+                            color: Colors.white, 
+                            fontSize: 16),
                         ),
                       ),
                     ),

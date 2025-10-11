@@ -205,7 +205,7 @@ class _ConsultaMedicaPageState extends State<ConsultaMedicaPage> {
                           height: 50,
                           decoration: const BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage("img/Imagen1.png"),
+                              image: AssetImage("img/logo.png"),
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -218,17 +218,17 @@ class _ConsultaMedicaPageState extends State<ConsultaMedicaPage> {
                               Text(
                                 'DocTime',
                                 style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 14,
-                                  fontFamily: 'Euclid Circular A',
+                                  color: Colors.black,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 'Consultas y citas médicas',
                                 style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                  fontFamily: 'Inter',
+                                  color: Colors.black,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -277,7 +277,7 @@ class _ConsultaMedicaPageState extends State<ConsultaMedicaPage> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue,
+                            color: Color(0xFF0077C2),
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -293,7 +293,7 @@ class _ConsultaMedicaPageState extends State<ConsultaMedicaPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
               ] else
                 const Center(child: CircularProgressIndicator()),
 
@@ -310,7 +310,7 @@ class _ConsultaMedicaPageState extends State<ConsultaMedicaPage> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue,
+                          color: Color(0xFF0077C2),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -390,7 +390,7 @@ class _ConsultaMedicaPageState extends State<ConsultaMedicaPage> {
                       child: ElevatedButton(
                         onPressed: guardarConsulta,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00ADFF),
+                          backgroundColor: const Color(0xFF0077C2),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -407,7 +407,7 @@ class _ConsultaMedicaPageState extends State<ConsultaMedicaPage> {
                       child: ElevatedButton(
                         onPressed: () => Navigator.pop(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00ADFF),
+                          backgroundColor: const Color(0xFF0077C2),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),

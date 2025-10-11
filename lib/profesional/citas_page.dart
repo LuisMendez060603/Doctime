@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'patient_dialog1.dart'; // Asegúrate de ajustar la ruta correctamente
 import 'ModificarCitaProfesional.dart'; // Ajusta el nombre según tu archivo
@@ -134,7 +135,7 @@ class _CitasPageState extends State<CitasPage> {
                         height: 50,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage("img/Imagen1.png"),
+                            image: AssetImage("img/logo.png"),
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -146,17 +147,17 @@ class _CitasPageState extends State<CitasPage> {
                           Text(
                             'DocTime',
                             style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 14,
-                              fontFamily: 'Euclid Circular A',
+                              color: Colors.black,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
                             'Consultas y citas médicas',
                             style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 10,
-                              fontFamily: 'Inter',
+                              color: Colors.black,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -202,9 +203,9 @@ class _CitasPageState extends State<CitasPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: mostrarCitasDeHoy ? const Color(0xFF00ADFF) : Colors.white,
-                        foregroundColor: mostrarCitasDeHoy ? Colors.white : const Color(0xFF00ADFF),
-                        side: const BorderSide(color: Color(0xFF00ADFF)),
+                        backgroundColor: mostrarCitasDeHoy ? const Color(0xFF0077C2) : Colors.white,
+                        foregroundColor: mostrarCitasDeHoy ? Colors.white : const Color(0xFF0077C2),
+                        side: const BorderSide(color: Color(0xFF0077C2)),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         textStyle: const TextStyle(fontSize: 16),
                       ),
@@ -220,9 +221,9 @@ class _CitasPageState extends State<CitasPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: !mostrarCitasDeHoy ? const Color(0xFF00ADFF) : Colors.white,
-                        foregroundColor: !mostrarCitasDeHoy ? Colors.white : const Color(0xFF00ADFF),
-                        side: const BorderSide(color: Color(0xFF00ADFF)),
+                        backgroundColor: !mostrarCitasDeHoy ? const Color(0xFF0077C2) : Colors.white,
+                        foregroundColor: !mostrarCitasDeHoy ? Colors.white : const Color(0xFF0077C2),
+                        side: const BorderSide(color: Color(0xFF0077C2)),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         textStyle: const TextStyle(fontSize: 16),
                       ),
@@ -265,7 +266,7 @@ class _CitasPageState extends State<CitasPage> {
                                               children: [
                                                 const Icon(
                                                   Icons.local_hospital, // Icono de consulta médica
-                                                  color: Colors.blue, // Color azul
+                                                  color: const Color(0xFF0077C2), // Color azul
                                                   size: 50,
                                                 ),
                                                 const SizedBox(height: 20),
@@ -281,7 +282,7 @@ class _CitasPageState extends State<CitasPage> {
                                                 const SizedBox(height: 20),
                                                 ElevatedButton(
                                                   style: ElevatedButton.styleFrom(
-                                                    backgroundColor: const Color(0xFF00ADFF),
+                                                    backgroundColor: const Color(0xFF0077C2),
                                                     foregroundColor: Colors.white,
                                                     padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
                                                     shape: RoundedRectangleBorder(
@@ -337,8 +338,8 @@ class _CitasPageState extends State<CitasPage> {
                                                               : cita['Estado'].toLowerCase() == 'modificada'
                                                                   ? Colors.orange
                                                                   : cita['Estado'].toLowerCase() == 'activa'
-                                                                      ? const Color(0xFF00ADFF)
-                                                                      : const Color(0xFF00ADFF),
+                                                                      ? const Color(0xFF0077C2)
+                                                                      : const Color(0xFF0077C2),
                                                       fontWeight: FontWeight.bold,
                                                     ),
                                                   ),
@@ -356,32 +357,35 @@ class _CitasPageState extends State<CitasPage> {
 
                                                   TextButton(
                                                     onPressed: () async {
-                                                      final claveCita = cita['Clave_Cita'];
-                                                      final url = 'http://localhost/doctime/BD/confirmar_cita.php';
+                                                      final confirmar = await mostrarDialogoConfirmacionConfirmar(context);
+                                                      if (confirmar == true) {
+                                                        final claveCita = cita['Clave_Cita'];
+                                                        final url = 'http://localhost/doctime/BD/confirmar_cita.php';
 
-                                                      try {
-                                                        final response = await http.post(
-                                                          Uri.parse(url),
-                                                          headers: {'Content-Type': 'application/json'},
-                                                          body: jsonEncode({'clave_cita': claveCita}),
-                                                        );
+                                                        try {
+                                                          final response = await http.post(
+                                                            Uri.parse(url),
+                                                            headers: {'Content-Type': 'application/json'},
+                                                            body: jsonEncode({'clave_cita': claveCita}),
+                                                          );
 
-                                                        final result = jsonDecode(response.body);
-                                                        if (result['success']) {
-                                                          setState(() {
-                                                            cita['botonesDeshabilitados'] = true; // Deshabilitar los botones solo para esta cita
-                                                            cita['Estado'] = 'Confirmada'; // Cambiar el estado de la cita
-                                                          });
-                                                          _showSuccessDialog('¡Cita Confirmada!', 'img/Imagen5.png');
-                                                        } else {
+                                                          final result = jsonDecode(response.body);
+                                                          if (result['success']) {
+                                                            setState(() {
+                                                              cita['botonesDeshabilitados'] = true; // Deshabilitar los botones solo para esta cita
+                                                              cita['Estado'] = 'Confirmada'; // Cambiar el estado de la cita
+                                                            });
+                                                            _showSuccessDialog('¡Cita Confirmada!', 'img/Imagen5.png');
+                                                          } else {
+                                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                              SnackBar(content: Text('Error: ${result['message']}')),
+                                                            );
+                                                          }
+                                                        } catch (e) {
                                                           ScaffoldMessenger.of(context).showSnackBar(
-                                                            SnackBar(content: Text('Error: ${result['message']}')),
+                                                            const SnackBar(content: Text('Error al confirmar la cita')),
                                                           );
                                                         }
-                                                      } catch (e) {
-                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                          const SnackBar(content: Text('Error al confirmar la cita')),
-                                                        );
                                                       }
                                                     },
                                                     style: TextButton.styleFrom(
@@ -398,17 +402,21 @@ class _CitasPageState extends State<CitasPage> {
                                                     !cita['Estado'].toString().toLowerCase().contains('cancelada') &&
                                                     !cita['botonesDeshabilitados'])
                                                   TextButton(
-                                                    onPressed: () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) => ModificarCitaProfesional(
-                                                            correo: widget.correo, password: widget.password,
-                                                            cita: cita,
-                                                            claveProfesional: '7', // Pass the required argument
+                                                    onPressed: () async {
+                                                      final modificar = await mostrarDialogoConfirmacionModificar(context);
+                                                      if (modificar == true) {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) => ModificarCitaProfesional(
+                                                              correo: widget.correo,
+                                                              password: widget.password,
+                                                              cita: cita,
+                                                              claveProfesional: '7', // Ajusta según tu lógica
+                                                            ),
                                                           ),
-                                                        ),
-                                                      );
+                                                        );
+                                                      }
                                                     },
                                                     style: TextButton.styleFrom(
                                                       foregroundColor: Colors.orange,
@@ -480,7 +488,7 @@ class _CitasPageState extends State<CitasPage> {
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00ADFF),
+                    backgroundColor: const Color(0xFF0077C2),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -500,7 +508,7 @@ class _CitasPageState extends State<CitasPage> {
   }
 }
 
-// Coloca esta función fuera de la clase _CitasPageState (por ejemplo, al final del archivo)
+
 Future<bool?> mostrarDialogoConfirmacion(BuildContext context) async {
   final width = MediaQuery.of(context).size.width;
   final isSmallScreen = width < 600;
@@ -534,30 +542,9 @@ Future<bool?> mostrarDialogoConfirmacion(BuildContext context) async {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00ADFF),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    'No',
-                    style: TextStyle(
-                      fontSize: isSmallScreen ? 14 : 16,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(true),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00ADFF),
+                    backgroundColor: const Color(0xFF0077C2),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -572,6 +559,27 @@ Future<bool?> mostrarDialogoConfirmacion(BuildContext context) async {
                   ),
                 ),
               ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0077C2),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'No',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ],
@@ -580,6 +588,163 @@ Future<bool?> mostrarDialogoConfirmacion(BuildContext context) async {
   );
 }
 
+Future<bool?> mostrarDialogoConfirmacionConfirmar(BuildContext context) async {
+  final width = MediaQuery.of(context).size.width;
+  final isSmallScreen = width < 600;
+
+  return showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            'img/Imagen5.png', // Cambia la imagen si lo deseas
+            width: isSmallScreen ? 100 : 150,
+            height: isSmallScreen ? 100 : 150,
+            fit: BoxFit.contain,
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            '¿Estás seguro que deseas confirmar esta cita?',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 25),
+          Column(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0077C2),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Sí, confirmar',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0077C2),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'No',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Future<bool?> mostrarDialogoConfirmacionModificar(BuildContext context) async {
+  final width = MediaQuery.of(context).size.width;
+  final isSmallScreen = width < 600;
+
+  return showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            'img/Imagen6.png', // Cambia la imagen si tienes una específica para modificar
+            width: isSmallScreen ? 100 : 150,
+            height: isSmallScreen ? 100 : 150,
+            fit: BoxFit.contain,
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            '¿Estás seguro que deseas modificar esta cita?',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 25),
+          Column(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0077C2),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Sí, modificar',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0077C2),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'No',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
 
 
