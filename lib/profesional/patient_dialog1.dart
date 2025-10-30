@@ -286,8 +286,8 @@ class _PatientDialog1State extends State<PatientDialog1> {
                           },
                           child: Image.asset(
                             'img/Frame (5).png',
-                            width: 24,
-                            height: 24,
+                            width: 30,
+                            height: 30,
                           ),
                         ),
                       ],

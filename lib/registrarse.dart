@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'main.dart'; // Importa tu main.dart aquí
+import 'package:flutter/services.dart'; // <-- agregar esta línea
 
 class RegistrarsePage extends StatefulWidget {
   const RegistrarsePage({super.key});
@@ -24,19 +25,39 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
 
   Future<void> _registrarUsuario() async {
     // Validaciones básicas
-    if (_nombreController.text.isEmpty ||
-        _apellidoController.text.isEmpty ||
-        _telefonoController.text.isEmpty ||
-        _correoController.text.isEmpty ||
-        _passwordController.text.isEmpty) {
+    final nombre = _nombreController.text.trim();
+    final apellido = _apellidoController.text.trim();
+    final telefono = _telefonoController.text.trim();
+    final correo = _correoController.text.trim();
+    final password = _passwordController.text;
+
+    if (nombre.isEmpty ||
+        apellido.isEmpty ||
+        telefono.isEmpty ||
+        correo.isEmpty ||
+        password.isEmpty) {
       _showWarningDialog("Por favor, complete todos los campos.");
+      return;
+    }
+
+    // Validar teléfono: sólo dígitos y exactamente 10 caracteres
+    final telefonoSoloDigitos = RegExp(r'^\d+$').hasMatch(telefono);
+    if (!telefonoSoloDigitos || telefono.length != 10) {
+      _showWarningDialog("Teléfono inválido. Debe contener exactamente 10 dígitos.");
+      return;
+    }
+
+    // Validar correo simple: debe contener @ y un punto después
+    final correoValido = RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(correo);
+    if (!correoValido) {
+      _showWarningDialog("Correo inválido. Debe contener '@' y un dominio '.'");
       return;
     }
 
     // Si es profesional, validar campos extra
     if (_selectedRole == 'profesional') {
-      if (_especialidadController.text.isEmpty ||
-          _direccionController.text.isEmpty) {
+      if (_especialidadController.text.trim().isEmpty ||
+          _direccionController.text.trim().isEmpty) {
         _showWarningDialog("Por favor, complete los datos del profesional.");
         return;
       }
@@ -46,32 +67,36 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
 
     // Armar body según rol
     final Map<String, dynamic> body = {
-      "nombre": _nombreController.text,
-      "apellido": _apellidoController.text,
-      "telefono": _telefonoController.text,
-      "correo": _correoController.text,
-      "password": _passwordController.text,
+      "nombre": nombre,
+      "apellido": apellido,
+      "telefono": telefono,
+      "correo": correo,
+      "password": password,
       "role": _selectedRole,
     };
 
     if (_selectedRole == 'profesional') {
       body.addAll({
-        "Especialidad": _especialidadController.text,
-        "Direccion": _direccionController.text,
+        "Especialidad": _especialidadController.text.trim(),
+        "Direccion": _direccionController.text.trim(),
       });
     }
 
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(body),
-    );
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(body),
+      );
 
-    final responseData = jsonDecode(response.body);
-    if (responseData["success"]) {
-      _showSuccessDialog();
-    } else {
-      _showWarningDialog("Error: ${responseData["message"]}");
+      final responseData = jsonDecode(response.body);
+      if (responseData["success"]) {
+        _showSuccessDialog();
+      } else {
+        _showWarningDialog("Error: ${responseData["message"]}");
+      }
+    } catch (e) {
+      _showWarningDialog("Error de conexión. Intenta de nuevo.");
     }
   }
 
@@ -237,6 +262,9 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
                     // pasar nuevos controllers para profesional
                     especialidadController: _especialidadController,
                     direccionController: _direccionController,
+
+                    // callback para mostrar advertencias desde Frame9
+                    showWarning: (msg) => _showWarningDialog(msg),
                   ),
                 );
               },
@@ -255,12 +283,15 @@ class Frame9 extends StatelessWidget {
   final TextEditingController correoController;
   final TextEditingController contrasenaController;
   final VoidCallback onRegistrar;
-  final String role; // <-- nuevo
-  final ValueChanged<String> onRoleChanged; // <-- nuevo
+  final String role;
+  final ValueChanged<String> onRoleChanged;
 
   // Nuevos controllers para profesional
   final TextEditingController especialidadController;
   final TextEditingController direccionController;
+
+  // Callback para mostrar advertencias (usar _showWarningDialog del State)
+  final ValueChanged<String> showWarning;
 
   const Frame9({
     super.key,
@@ -270,12 +301,11 @@ class Frame9 extends StatelessWidget {
     required this.correoController,
     required this.contrasenaController,
     required this.onRegistrar,
-    required this.role, // <-- nuevo
-    required this.onRoleChanged, // <-- nuevo
-
-    // Inicializar nuevos controllers para profesional
+    required this.role,
+    required this.onRoleChanged,
     required this.especialidadController,
     required this.direccionController,
+    required this.showWarning,
   });
 
   @override
@@ -334,7 +364,47 @@ class Frame9 extends StatelessWidget {
               const SizedBox(height: 12),
               _buildTextField(label: 'Nombre', hint: 'Ingresa tu nombre', controller: nombreController),
               _buildTextField(label: 'Apellido', hint: 'Ingresa tu apellido', controller: apellidoController),
-              _buildTextField(label: 'Teléfono', hint: 'Ingresa tu número', controller: telefonoController),
+              // Campo Teléfono: filtra letras y muestra advertencia si se pega/ingresa texto no numérico
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Teléfono',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    TextField(
+                      controller: telefonoController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        hintText: 'Ingresa tu número',
+                        hintStyle: TextStyle(color: Color(0xFF9E9E9E)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          borderSide: BorderSide(color: Color(0xFFBDBDBD)),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        final filtered = value.replaceAll(RegExp(r'[^0-9]'), '');
+                        if (filtered != value) {
+                          // restaurar solo dígitos y mantener cursor al final
+                          telefonoController.text = filtered;
+                          telefonoController.selection = TextSelection.fromPosition(
+                              TextPosition(offset: filtered.length));
+                          // mostrar la advertencia usando el callback del padre
+                          showWarning('Sólo se permiten números en Teléfono');
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
               _buildTextField(label: 'Correo Electrónico', hint: 'Ingresa tu correo', controller: correoController),
               _buildTextField(label: 'Contraseña', hint: 'Ingresa tu contraseña', controller: contrasenaController, obscureText: true),
                // Campos adicionales para profesional
