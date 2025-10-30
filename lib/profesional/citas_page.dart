@@ -412,7 +412,7 @@ class _CitasPageState extends State<CitasPage> {
                                                               correo: widget.correo,
                                                               password: widget.password,
                                                               cita: cita,
-                                                              claveProfesional: '7', // Ajusta según tu lógica
+                                                              claveProfesional: cita['Clave_Profesional'], // Usa la clave del profesional de la cita
                                                             ),
                                                           ),
                                                         );

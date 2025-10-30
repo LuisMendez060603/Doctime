@@ -18,32 +18,34 @@ if ($conn->connect_error) {
     exit();
 }
 
-// Buscar clave del profesional por correo
-$sql_clave = "SELECT Clave_Profesional FROM profesional WHERE Correo = ?";
-$stmt_clave = $conn->prepare($sql_clave);
-$stmt_clave->bind_param("s", $correo);
-$stmt_clave->execute();
-$result_clave = $stmt_clave->get_result();
+// Verificar que el profesional existe
+$sql_prof = "SELECT Clave_Profesional FROM profesional WHERE Correo = ?";
+$stmt_prof = $conn->prepare($sql_prof);
+$stmt_prof->bind_param("s", $correo);
+$stmt_prof->execute();
+$result_prof = $stmt_prof->get_result();
 
-if ($result_clave->num_rows == 0) {
+if ($result_prof->num_rows == 0) {
     echo json_encode(['success' => false, 'message' => 'Profesional no encontrado']);
     exit();
 }
 
-$row = $result_clave->fetch_assoc();
-$clave_profesional = $row['Clave_Profesional'];
-
-// Obtener citas asociadas a ese profesional
-$sql = "SELECT c.Clave_Cita, c.Fecha, c.Hora, p.Nombre AS Nombre_Paciente, c.Estado
+// Obtener todas las citas sin filtrar por profesional
+$sql = "SELECT 
+            c.Clave_Cita, 
+            c.Fecha, 
+            c.Hora, 
+            p.Nombre AS Nombre_Paciente, 
+            c.Estado,
+            c.Clave_Profesional,
+            prof.Nombre AS Nombre_Profesional,
+            prof.Especialidad
         FROM cita c
         JOIN paciente p ON c.Clave_Paciente = p.Clave_Paciente
-        WHERE c.Clave_Profesional = ?
+        JOIN profesional prof ON c.Clave_Profesional = prof.Clave_Profesional
         ORDER BY c.Fecha, c.Hora";
 
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $clave_profesional);
-$stmt->execute();
-$result = $stmt->get_result();
+$result = $conn->query($sql);
 
 $citas = [];
 while ($row = $result->fetch_assoc()) {
@@ -52,13 +54,14 @@ while ($row = $result->fetch_assoc()) {
         'Fecha' => $row['Fecha'],
         'Hora' => $row['Hora'],
         'Nombre_Paciente' => $row['Nombre_Paciente'],
-        'Estado' => $row['Estado']
+        'Estado' => $row['Estado'],
+        'Clave_Profesional' => $row['Clave_Profesional'],
+        'Nombre_Profesional' => $row['Nombre_Profesional'],
+        'Especialidad' => $row['Especialidad']
     ];
 }
 
 echo json_encode(['success' => true, 'citas' => $citas]);
 
-
-$stmt->close();
 $conn->close();
 ?>
