@@ -16,10 +16,10 @@ class HistorialCitas extends StatefulWidget {
 }
 
 class _HistorialCitasState extends State<HistorialCitas> {
-  bool cargando = false;
+  bool cargando = true;
   List citasPendientes = [];
   List citasPasadas = [];
-  bool mostrarPendientes = true; // 👈 aquí va la variable
+  bool mostrarPendientes = true;
 
   @override
   void initState() {
@@ -93,10 +93,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
             const SizedBox(height: 20),
             const Text(
               '¿Estás seguro que deseas cancelar esta cita?',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 25),
@@ -107,21 +104,14 @@ class _HistorialCitasState extends State<HistorialCitas> {
                   child: ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(false),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0077C2), // Azul principal
+                      backgroundColor: const Color(0xFF0077C2),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10), // Esquinas redondeadas
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'No',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold, // Negrita
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: const Text('No', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -130,21 +120,14 @@ class _HistorialCitasState extends State<HistorialCitas> {
                   child: ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(true),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0077C2), // Azul principal
+                      backgroundColor: const Color(0xFF0077C2),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10), // Esquinas redondeadas
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'Sí, cancelar',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold, // Negrita
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: const Text('Sí, cancelar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                   ),
                 ),
               ],
@@ -182,7 +165,46 @@ class _HistorialCitasState extends State<HistorialCitas> {
     }
   }
 
-   @override
+  void verCita(Map<String, dynamic> cita) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Detalle de consulta',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset('img/Frame (7).png', width: 100, height: 100, fit: BoxFit.cover),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.maxFinite,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => VerConsulta(
+                        cita: cita,
+                        correo: widget.correo,
+                        password: widget.password,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Ver'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isSmallScreen = width < 600;
@@ -191,12 +213,10 @@ class _HistorialCitasState extends State<HistorialCitas> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Contenido principal
           SingleChildScrollView(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                // Cabecera con logo y texto
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -216,22 +236,8 @@ class _HistorialCitasState extends State<HistorialCitas> {
                         const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'DocTime',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              'Consultas y citas médicas',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                            Text('DocTime', style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold)),
+                            Text('Consultas y citas médicas', style: TextStyle(color: Colors.black, fontSize: 11, fontWeight: FontWeight.w500)),
                           ],
                         ),
                       ],
@@ -259,19 +265,12 @@ class _HistorialCitasState extends State<HistorialCitas> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 20),
-
-                // 🔹 Botones para alternar entre Citas Pendientes y Pasadas
-                    Row(
+                Row(
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            mostrarPendientes = true;
-                          });
-                        },
+                        onPressed: () => setState(() => mostrarPendientes = true),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: mostrarPendientes ? const Color(0xFF0077C2) : Colors.white,
                           foregroundColor: mostrarPendientes ? Colors.white : const Color(0xFF0077C2),
@@ -285,11 +284,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            mostrarPendientes = false;
-                          });
-                        },
+                        onPressed: () => setState(() => mostrarPendientes = false),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: !mostrarPendientes ? const Color(0xFF0077C2) : Colors.white,
                           foregroundColor: !mostrarPendientes ? Colors.white : const Color(0xFF0077C2),
@@ -302,18 +297,13 @@ class _HistorialCitasState extends State<HistorialCitas> {
                     ),
                   ],
                 ),
-
-
                 const SizedBox(height: 20),
-
-                // 🔹 Contenido dinámico según el botón
                 if (cargando)
                   const Center(child: CircularProgressIndicator())
                 else if (mostrarPendientes)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 👇 Se eliminó el texto de "Citas Pendientes"
                       const SizedBox(height: 12),
                       ...citasPendientes.map(
                         (cita) => CitaCard(
@@ -333,6 +323,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
                               ),
                             );
                           },
+                          onVer: () => verCita(cita),
                         ),
                       ),
                     ],
@@ -341,27 +332,21 @@ class _HistorialCitasState extends State<HistorialCitas> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 👇 Se eliminó el texto de "Citas Pasadas"
                       const SizedBox(height: 12),
                       ...citasPasadas.map(
                         (cita) => CitaCard(
                           cita: cita,
-                          color: cita['estado'] == 'Cancelada'
-                              ? Colors.red[100]!
-                              : Colors.grey[300]!,
+                          color: cita['estado'] == 'Cancelada' ? Colors.red[100]! : Colors.grey[300]!,
                           cancelada: cita['estado'] == 'Cancelada',
+                          onVer: () => verCita(cita),
                         ),
                       ),
                     ],
                   ),
-
-
                 const SizedBox(height: 40),
               ],
             ),
           ),
-
-          // Botón "Volver"
           Positioned(
             bottom: 20,
             left: 0,
@@ -374,14 +359,9 @@ class _HistorialCitasState extends State<HistorialCitas> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0077C2),
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
-                  child: const Text(
-                    'Volver',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
+                  child: const Text('Volver', style: TextStyle(fontSize: 18, color: Colors.white)),
                 ),
               ),
             ),
@@ -392,12 +372,12 @@ class _HistorialCitasState extends State<HistorialCitas> {
   }
 }
 
-
 class CitaCard extends StatelessWidget {
   final Map<String, dynamic> cita;
   final Color color;
   final VoidCallback? onCancelar;
   final VoidCallback? onModificar;
+  final VoidCallback? onVer;
   final bool cancelada;
 
   const CitaCard({
@@ -406,57 +386,18 @@ class CitaCard extends StatelessWidget {
     required this.color,
     this.onCancelar,
     this.onModificar,
+    this.onVer,
     this.cancelada = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Detectar los estados
     bool confirmada = cita['estado'].toString().toLowerCase().contains('confirmada');
     bool modificada = cita['estado'].toString().toLowerCase().contains('modificada');
     bool cancelada = cita['estado'] == 'Cancelada';
 
     return InkWell(
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) {
-            print('Datos de la cita:');
-            cita.forEach((key, value) {
-              print('$key: $value');
-            });
-            return AlertDialog(
-              title: const Text('Detalle de consulta'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Clave de la cita: ${cita['clave_cita'] ?? cita['Clave_Cita'] ?? 'No disponible'}',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.maxFinite,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => VerConsulta(
-                              cita: cita),
-                          ),
-                        );
-                      },
-                      child: const Text('Ver'),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+      onTap: onVer,
       child: Card(
         color: color,
         margin: const EdgeInsets.only(bottom: 12),
@@ -479,29 +420,14 @@ class CitaCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 6),
-              Text(
-                'Con ${cita['profesional']}',
-                style: const TextStyle(fontSize: 16),
-              ),
+              Text('Con ${cita['profesional']}', style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 10),
-
-              // Mostrar el estado de la cita (Confirmada, Cancelada, Modificada)
               if (cancelada)
-                const Text(
-                  'Cancelada',
-                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                ),
+                const Text('Cancelada', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
               if (modificada)
-                const Text(
-                  'Modificada',
-                  style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
-                ),
+                const Text('Modificada', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
               if (confirmada)
-                const Text(
-                  'Confirmada',
-                  style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                ),
-              // Mostrar botones para modificar o cancelar la cita
+                const Text('Confirmada', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
               if (onCancelar != null && onModificar != null)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
