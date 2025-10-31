@@ -263,44 +263,44 @@ class _HistorialCitasState extends State<HistorialCitas> {
 
                 // 🔹 Botones para alternar entre Citas Pendientes y Pasadas
                 Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          mostrarPendientes = true;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: mostrarPendientes ? const Color(0xFF0077C2) : Colors.white,
-                        foregroundColor: mostrarPendientes ? Colors.white : const Color(0xFF0077C2),
-                        side: const BorderSide(color: Color(0xFF0077C2)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        textStyle: const TextStyle(fontSize: 16),
-                      ),
-                      child: const Text('Citas Pendientes'),
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        mostrarPendientes = true;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: mostrarPendientes ? const Color(0xFF0077C2) : Colors.white,
+                      foregroundColor: mostrarPendientes ? Colors.white : const Color(0xFF0077C2),
+                      side: const BorderSide(color: Color(0xFF0077C2)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      textStyle: const TextStyle(fontSize: 16),
                     ),
+                    child: const Text('Citas Pendientes'),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          mostrarPendientes = false;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: !mostrarPendientes ? const Color(0xFF0077C2) : Colors.white,
-                        foregroundColor: !mostrarPendientes ? Colors.white : const Color(0xFF0077C2),
-                        side: const BorderSide(color: Color(0xFF0077C2)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        textStyle: const TextStyle(fontSize: 16),
-                      ),
-                      child: const Text('Citas Pasadas'),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        mostrarPendientes = false;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: !mostrarPendientes ? const Color(0xFF0077C2) : Colors.white,
+                      foregroundColor: !mostrarPendientes ? Colors.white : const Color(0xFF0077C2),
+                      side: const BorderSide(color: Color(0xFF0077C2)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      textStyle: const TextStyle(fontSize: 16),
                     ),
+                    child: const Text('Citas Pasadas'),
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
 
 
                 const SizedBox(height: 20),
