@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'modificar_cita.dart';
 import 'patient_dialog.dart';
+import 'ver_consulta.dart';
 
 class HistorialCitas extends StatefulWidget {
   final String correo;
@@ -262,45 +263,45 @@ class _HistorialCitasState extends State<HistorialCitas> {
                 const SizedBox(height: 20),
 
                 // 🔹 Botones para alternar entre Citas Pendientes y Pasadas
-                Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        mostrarPendientes = true;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: mostrarPendientes ? const Color(0xFF0077C2) : Colors.white,
-                      foregroundColor: mostrarPendientes ? Colors.white : const Color(0xFF0077C2),
-                      side: const BorderSide(color: Color(0xFF0077C2)),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      textStyle: const TextStyle(fontSize: 16),
+                    Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            mostrarPendientes = true;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: mostrarPendientes ? const Color(0xFF0077C2) : Colors.white,
+                          foregroundColor: mostrarPendientes ? Colors.white : const Color(0xFF0077C2),
+                          side: const BorderSide(color: Color(0xFF0077C2)),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          textStyle: const TextStyle(fontSize: 16),
+                        ),
+                        child: const Text('Citas Pendientes'),
+                      ),
                     ),
-                    child: const Text('Citas Pendientes'),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        mostrarPendientes = false;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: !mostrarPendientes ? const Color(0xFF0077C2) : Colors.white,
-                      foregroundColor: !mostrarPendientes ? Colors.white : const Color(0xFF0077C2),
-                      side: const BorderSide(color: Color(0xFF0077C2)),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      textStyle: const TextStyle(fontSize: 16),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            mostrarPendientes = false;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: !mostrarPendientes ? const Color(0xFF0077C2) : Colors.white,
+                          foregroundColor: !mostrarPendientes ? Colors.white : const Color(0xFF0077C2),
+                          side: const BorderSide(color: Color(0xFF0077C2)),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          textStyle: const TextStyle(fontSize: 16),
+                        ),
+                        child: const Text('Citas Pasadas'),
+                      ),
                     ),
-                    child: const Text('Citas Pasadas'),
-                  ),
+                  ],
                 ),
-              ],
-            ),
 
 
                 const SizedBox(height: 20),
@@ -415,70 +416,111 @@ class CitaCard extends StatelessWidget {
     bool modificada = cita['estado'].toString().toLowerCase().contains('modificada');
     bool cancelada = cita['estado'] == 'Cancelada';
 
-    return Card(
-      color: color,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.calendar_today, color: Colors.black54),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    '${cita['fecha']} - ${cita['hora']}',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Con ${cita['profesional']}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 10),
-
-            // Mostrar el estado de la cita (Confirmada, Cancelada, Modificada)
-            if (cancelada)
-              const Text(
-                'Cancelada',
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-              ),
-            if (modificada)
-              const Text(
-                'Modificada',
-                style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
-              ),
-            if (confirmada)
-              const Text(
-                'Confirmada',
-                style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-              ),
-            
-            // Mostrar botones para modificar o cancelar la cita
-            if (onCancelar != null && onModificar != null)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+    return InkWell(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            print('Datos de la cita:');
+            cita.forEach((key, value) {
+              print('$key: $value');
+            });
+            return AlertDialog(
+              title: const Text('Detalle de consulta'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextButton.icon(
-                    onPressed: onModificar,
-                    icon: const Icon(Icons.edit, color: Colors.blue),
-                    label: const Text('Modificar', style: TextStyle(color: Colors.blue)),
+                  Text(
+                    'Clave de la cita: ${cita['clave_cita'] ?? cita['Clave_Cita'] ?? 'No disponible'}',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(width: 8),
-                  TextButton.icon(
-                    onPressed: onCancelar,
-                    icon: const Icon(Icons.cancel, color: Colors.red),
-                    label: const Text('Cancelar', style: TextStyle(color: Colors.red)),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.maxFinite,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => VerConsulta(
+                              cita: cita),
+                          ),
+                        );
+                      },
+                      child: const Text('Ver'),
+                    ),
                   ),
                 ],
               ),
-          ],
+            );
+          },
+        );
+      },
+      child: Card(
+        color: color,
+        margin: const EdgeInsets.only(bottom: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.calendar_today, color: Colors.black54),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      '${cita['fecha']} - ${cita['hora']}',
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Con ${cita['profesional']}',
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 10),
+
+              // Mostrar el estado de la cita (Confirmada, Cancelada, Modificada)
+              if (cancelada)
+                const Text(
+                  'Cancelada',
+                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                ),
+              if (modificada)
+                const Text(
+                  'Modificada',
+                  style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                ),
+              if (confirmada)
+                const Text(
+                  'Confirmada',
+                  style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                ),
+              // Mostrar botones para modificar o cancelar la cita
+              if (onCancelar != null && onModificar != null)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton.icon(
+                      onPressed: onModificar,
+                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      label: const Text('Modificar', style: TextStyle(color: Colors.blue)),
+                    ),
+                    const SizedBox(width: 8),
+                    TextButton.icon(
+                      onPressed: onCancelar,
+                      icon: const Icon(Icons.cancel, color: Colors.red),
+                      label: const Text('Cancelar', style: TextStyle(color: Colors.red)),
+                    ),
+                  ],
+                ),
+            ],
+          ),
         ),
       ),
     );
