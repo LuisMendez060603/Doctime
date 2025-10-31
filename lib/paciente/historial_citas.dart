@@ -15,9 +15,10 @@ class HistorialCitas extends StatefulWidget {
 }
 
 class _HistorialCitasState extends State<HistorialCitas> {
-  List<Map<String, dynamic>> citasPendientes = [];
-  List<Map<String, dynamic>> citasPasadas = [];
-  bool cargando = true;
+  bool cargando = false;
+  List citasPendientes = [];
+  List citasPasadas = [];
+  bool mostrarPendientes = true; // 👈 aquí va la variable
 
   @override
   void initState() {
@@ -180,7 +181,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
     }
   }
 
-  @override
+   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isSmallScreen = width < 600;
@@ -189,12 +190,12 @@ class _HistorialCitasState extends State<HistorialCitas> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // El contenido principal que se desplaza
+          // Contenido principal
           SingleChildScrollView(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                // Cabecera
+                // Cabecera con logo y texto
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -260,16 +261,58 @@ class _HistorialCitasState extends State<HistorialCitas> {
 
                 const SizedBox(height: 20),
 
-                // Lista de citas (pendientes, pasadas)
+                // 🔹 Botones para alternar entre Citas Pendientes y Pasadas
+                Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          mostrarPendientes = true;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: mostrarPendientes ? const Color(0xFF0077C2) : Colors.white,
+                        foregroundColor: mostrarPendientes ? Colors.white : const Color(0xFF0077C2),
+                        side: const BorderSide(color: Color(0xFF0077C2)),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        textStyle: const TextStyle(fontSize: 16),
+                      ),
+                      child: const Text('Citas Pendientes'),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          mostrarPendientes = false;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: !mostrarPendientes ? const Color(0xFF0077C2) : Colors.white,
+                        foregroundColor: !mostrarPendientes ? Colors.white : const Color(0xFF0077C2),
+                        side: const BorderSide(color: Color(0xFF0077C2)),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        textStyle: const TextStyle(fontSize: 16),
+                      ),
+                      child: const Text('Citas Pasadas'),
+                    ),
+                  ),
+                ],
+              ),
+
+
+                const SizedBox(height: 20),
+
+                // 🔹 Contenido dinámico según el botón
                 if (cargando)
                   const Center(child: CircularProgressIndicator())
-                else
-                  ListView(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
+                else if (mostrarPendientes)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Citas Pendientes',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      // 👇 Se eliminó el texto de "Citas Pendientes"
                       const SizedBox(height: 12),
                       ...citasPendientes.map(
                         (cita) => CitaCard(
@@ -291,10 +334,13 @@ class _HistorialCitasState extends State<HistorialCitas> {
                           },
                         ),
                       ),
-
-                      const SizedBox(height: 30),
-                      const Text('Citas Pasadas',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    ],
+                  )
+                else
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 👇 Se eliminó el texto de "Citas Pasadas"
                       const SizedBox(height: 12),
                       ...citasPasadas.map(
                         (cita) => CitaCard(
@@ -308,12 +354,13 @@ class _HistorialCitasState extends State<HistorialCitas> {
                     ],
                   ),
 
+
                 const SizedBox(height: 40),
               ],
             ),
           ),
 
-          // Botón Volver
+          // Botón "Volver"
           Positioned(
             bottom: 20,
             left: 0,
@@ -343,6 +390,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
     );
   }
 }
+
 
 class CitaCard extends StatelessWidget {
   final Map<String, dynamic> cita;
