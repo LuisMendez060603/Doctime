@@ -12,16 +12,20 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   mysql1: ^0.20.0
-  http: ^0.13.4
-  shared_preferences: ^2.0.11
+  http: ^0.13.6
+  shared_preferences: ^2.0.15
   flutter_localizations:
     sdk: flutter
 
-  # ✅ Paquetes para PDF
-pdf: ^4.9.0
-printing: ^5.10.0
+  # ✅ Paquetes para PDF y generación de documentos
+  pdf: ^3.11.3
+  printing: ^5.10.0
 
+  # 📂 Para guardar archivos en almacenamiento local (compatible con Flutter 3.7.2)
+  path_provider: ^2.1.5
 
+  # 🔐 Para permisos de almacenamiento en Android
+  permission_handler: ^10.4.0
 
 dev_dependencies:
   flutter_test:
@@ -41,3 +45,6 @@ flutter:
     - img/Frame (5).png
     - img/Frame (6).png
     - img/Frame (7).png
+    # 📂 Fuente Roboto para PDF Unicode
+    - assets/fonts/Roboto-Regular.ttf
+    - assets/fonts/Roboto-Bold.ttf

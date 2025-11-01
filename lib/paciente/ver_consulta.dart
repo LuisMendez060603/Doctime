@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'pdf_generator.dart';
 import 'patient_dialog.dart';
 
 class VerConsulta extends StatelessWidget {
@@ -15,6 +16,7 @@ class VerConsulta extends StatelessWidget {
     required this.password,
   });
 
+  // 🔹 Obtener consulta desde backend
   Future<Map<String, dynamic>?> obtenerConsulta() async {
     final url = Uri.parse('http://localhost/doctime/BD/obtener_consulta.php');
     final response = await http.post(
@@ -44,7 +46,7 @@ class VerConsulta extends StatelessWidget {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                // 🔹 Cabecera con logo, texto y perfil (sin AppBar)
+                // 🔹 Cabecera
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -64,22 +66,8 @@ class VerConsulta extends StatelessWidget {
                         const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'DocTime',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              'Consultas y citas médicas',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                            Text('DocTime', style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold)),
+                            Text('Consultas y citas médicas', style: TextStyle(color: Colors.black, fontSize: 11, fontWeight: FontWeight.w500)),
                           ],
                         ),
                       ],
@@ -88,10 +76,7 @@ class VerConsulta extends StatelessWidget {
                       onTap: () {
                         showDialog(
                           context: context,
-                          builder: (context) => PatientDialog(
-                            correo: correo,
-                            password: password,
-                          ),
+                          builder: (context) => PatientDialog(correo: correo, password: password),
                         );
                       },
                       child: Container(
@@ -110,20 +95,17 @@ class VerConsulta extends StatelessWidget {
 
                 const SizedBox(height: 30),
 
-                // 🔹 Card con detalles de la cita y consulta
+                // 🔹 Card con detalles
                 Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   elevation: 3,
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: FutureBuilder<Map<String, dynamic>?>(
                       future: obtenerConsulta(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
                         } else if (snapshot.hasError) {
                           return const Text('Error al cargar la consulta');
                         } else {
@@ -131,45 +113,15 @@ class VerConsulta extends StatelessWidget {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Detalle de la Cita',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF0077C2),
-                                ),
-                              ),
+                              const Text('Detalle de la Cita', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0077C2))),
                               const SizedBox(height: 10),
-                              Text(
-                                "📅 Fecha: ${cita['fecha']}",
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                "⏰ Hora: ${cita['hora']}",
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                "👨‍⚕️ Profesional: ${cita['profesional']}",
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                "📌 Estado: ${cita['estado']}",
-                                style: const TextStyle(fontSize: 16),
-                              ),
+                              Text("📅 Fecha: ${cita['fecha']}", style: const TextStyle(fontSize: 16)),
+                              Text("⏰ Hora: ${cita['hora']}", style: const TextStyle(fontSize: 16)),
+                              Text("👨‍⚕️ Profesional: ${cita['profesional']}", style: const TextStyle(fontSize: 16)),
+                              
                               const SizedBox(height: 15),
-
-                              // 🔹 Título siempre visible
-                              const Text(
-                                'Datos de la Consulta',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF0077C2),
-                                ),
-                              ),
+                              const Text('Datos de la Consulta', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0077C2))),
                               const SizedBox(height: 10),
-
-                              // 🔹 Contenedor para la consulta
                               Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(12),
@@ -179,56 +131,39 @@ class VerConsulta extends StatelessWidget {
                                 ),
                                 child: consulta != null
                                     ? Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            "📝 Síntomas:",
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16),
-                                          ),
-                                          Text(
-                                            consulta['sintomas'],
-                                            style:
-                                                const TextStyle(fontSize: 16),
-                                            softWrap: true,
-                                          ),
+                                          Text("📝 Síntomas:", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                          Text(consulta['sintomas'], style: const TextStyle(fontSize: 16)),
                                           const SizedBox(height: 10),
-                                          Text(
-                                            "💊 Diagnóstico:",
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16),
-                                          ),
-                                          Text(
-                                            consulta['diagnostico'],
-                                            style:
-                                                const TextStyle(fontSize: 16),
-                                            softWrap: true,
-                                          ),
+                                          Text("💊 Diagnóstico:", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                          Text(consulta['diagnostico'], style: const TextStyle(fontSize: 16)),
                                           const SizedBox(height: 10),
-                                          Text(
-                                            "⚕️ Tratamiento:",
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16),
-                                          ),
-                                          Text(
-                                            consulta['tratamiento'],
-                                            style:
-                                                const TextStyle(fontSize: 16),
-                                            softWrap: true,
-                                          ),
+                                          Text("⚕️ Tratamiento:", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                          Text(consulta['tratamiento'], style: const TextStyle(fontSize: 16)),
                                         ],
                                       )
-                                    : const Text(
-                                        'No hay datos de consulta para esta cita',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontStyle: FontStyle.italic),
-                                      ),
+                                    : const Text('No hay datos de consulta para esta cita', style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
                               ),
+                              const SizedBox(height: 20),
+
+                              // 🔹 Botón "Descargar PDF"
+                              SizedBox(
+                                width: isSmallScreen ? 140 : 180,
+                                child: ElevatedButton(
+                                  onPressed: () => PdfGenerator.generarPDF(context, cita, consulta),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  ),
+                                  child: const Text(
+                                    'Descargar PDF',
+                                    style: TextStyle(fontSize: 16, color: Colors.white),
+                                  ),
+                                ),
+                              ),
+
                             ],
                           );
                         }
@@ -237,12 +172,12 @@ class VerConsulta extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 100), // espacio para el botón
+                const SizedBox(height: 100),
               ],
             ),
           ),
 
-          // 🔹 Botón "Volver" abajo
+          // 🔹 Botón "Volver"
           Positioned(
             bottom: 20,
             left: 0,
@@ -255,11 +190,9 @@ class VerConsulta extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0077C2),
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
-                  child: const Text('Volver',
-                      style: TextStyle(fontSize: 18, color: Colors.white)),
+                  child: const Text('Volver', style: TextStyle(fontSize: 18, color: Colors.white)),
                 ),
               ),
             ),
