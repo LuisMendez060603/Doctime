@@ -342,7 +342,7 @@ class _DetalleCita1State extends State<DetalleCita1> {
                             correo: widget.correo,
                             password: widget.password,
                             clavePaciente: clavePaciente,
-                            claveProfesional: '7',
+                            
                           ),
                         ),
                       );

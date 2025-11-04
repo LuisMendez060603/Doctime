@@ -4,13 +4,13 @@ header("Access-Control-Allow-Origin: *");
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-if (!isset($data['fecha'], $data['clave_profesional'])) {
-    echo json_encode(['success' => false, 'message' => 'Faltan datos']);
+// Verificar que se reciba la fecha
+if (!isset($data['fecha'])) {
+    echo json_encode(['success' => false, 'message' => 'Falta la fecha']);
     exit();
 }
 
 $fecha = $data['fecha'];
-$clave_profesional = intval($data['clave_profesional']);
 
 // Conexión
 $conn = new mysqli("localhost", "root", "", "doctime");
@@ -26,9 +26,11 @@ $horasPermitidas = [
 ];
 
 $ocupados = [];
-$check_sql = "SELECT Hora FROM cita WHERE Fecha = ? AND Clave_Profesional = ?";
+
+// Consultar horas ya ocupadas en esa fecha
+$check_sql = "SELECT Hora FROM cita WHERE Fecha = ?";
 $check_stmt = $conn->prepare($check_sql);
-$check_stmt->bind_param("si", $fecha, $clave_profesional);
+$check_stmt->bind_param("s", $fecha);
 $check_stmt->execute();
 $check_result = $check_stmt->get_result();
 
@@ -43,5 +45,6 @@ $conn->close();
 // Filtrar las horas ocupadas de la lista de horas permitidas
 $disponibles = array_diff($horasPermitidas, $ocupados);
 
+// Devolver resultado
 echo json_encode(['success' => true, 'horas_disponibles' => array_values($disponibles)]);
 ?>

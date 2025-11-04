@@ -2,20 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'patient_dialog.dart';
-import 'paciente1.dart'; // <-- Importación agregada
+import 'paciente1.dart';
 
 class DetalleCita2 extends StatefulWidget {
   final String correo;
   final String password;
   final String clavePaciente;
-  final String claveProfesional;
 
   const DetalleCita2({
     super.key,
     required this.correo,
     required this.password,
     required this.clavePaciente,
-    required this.claveProfesional,
   });
 
   @override
@@ -40,7 +38,6 @@ class _DetalleCita2State extends State<DetalleCita2> {
           'fecha': _fechaController.text,
           'hora': _horaController.text,
           'clave_paciente': widget.clavePaciente,
-          'clave_profesional': widget.claveProfesional,
         }),
       );
 
@@ -186,7 +183,6 @@ class _DetalleCita2State extends State<DetalleCita2> {
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'fecha': _fechaController.text,
-        'clave_profesional': widget.claveProfesional,
       }),
     );
 
@@ -223,10 +219,10 @@ class _DetalleCita2State extends State<DetalleCita2> {
           children: [
             _buildHeader(),
             const SizedBox(height: 30),
-            Text(
+            const Text(
               'Agendar Cita Médica',
-              style: const TextStyle(
-                color: const Color(0xFF0077C2),
+              style: TextStyle(
+                color: Color(0xFF0077C2),
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Euclid Circular A',
@@ -326,17 +322,17 @@ class _DetalleCita2State extends State<DetalleCita2> {
                 Text(
                   'DocTime',
                   style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   'Consultas y citas médicas',
                   style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
