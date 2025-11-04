@@ -1,0 +1,10 @@
+flutter run -d Windows
+
+
+"subir cambios"
+
+git add .
+
+git commit -m "cambios"
+
+git push
