@@ -18,8 +18,8 @@ if ($conn->connect_error) {
     exit();
 }
 
-// Verificar que el profesional existe
-$sql_prof = "SELECT Clave_Profesional FROM profesional WHERE Correo = ?";
+// Verificar que el profesional existe (opcional, ya que solo hay uno)
+$sql_prof = "SELECT Nombre, Especialidad FROM profesional WHERE Correo = ?";
 $stmt_prof = $conn->prepare($sql_prof);
 $stmt_prof->bind_param("s", $correo);
 $stmt_prof->execute();
@@ -27,22 +27,25 @@ $result_prof = $stmt_prof->get_result();
 
 if ($result_prof->num_rows == 0) {
     echo json_encode(['success' => false, 'message' => 'Profesional no encontrado']);
+    $stmt_prof->close();
+    $conn->close();
     exit();
 }
 
-// Obtener todas las citas sin filtrar por profesional
+$prof = $result_prof->fetch_assoc();
+$nombre_profesional = $prof['Nombre'];
+$especialidad = $prof['Especialidad'];
+$stmt_prof->close();
+
+// Obtener todas las citas (ya no se filtran por profesional)
 $sql = "SELECT 
             c.Clave_Cita, 
             c.Fecha, 
             c.Hora, 
             p.Nombre AS Nombre_Paciente, 
-            c.Estado,
-            c.Clave_Profesional,
-            prof.Nombre AS Nombre_Profesional,
-            prof.Especialidad
+            c.Estado
         FROM cita c
         JOIN paciente p ON c.Clave_Paciente = p.Clave_Paciente
-        JOIN profesional prof ON c.Clave_Profesional = prof.Clave_Profesional
         ORDER BY c.Fecha, c.Hora";
 
 $result = $conn->query($sql);
@@ -55,9 +58,8 @@ while ($row = $result->fetch_assoc()) {
         'Hora' => $row['Hora'],
         'Nombre_Paciente' => $row['Nombre_Paciente'],
         'Estado' => $row['Estado'],
-        'Clave_Profesional' => $row['Clave_Profesional'],
-        'Nombre_Profesional' => $row['Nombre_Profesional'],
-        'Especialidad' => $row['Especialidad']
+        'Nombre_Profesional' => $nombre_profesional,
+        'Especialidad' => $especialidad
     ];
 }
 

@@ -8,14 +8,14 @@ class ModificarCitaProfesional extends StatefulWidget {
   final String correo;
   final String password;
   final Map<String, dynamic> cita;
-  final String claveProfesional;
+  
 
   const ModificarCitaProfesional({
     super.key,
     required this.correo,
     required this.password,
     required this.cita,
-    required this.claveProfesional,
+    
   });
 
   @override
@@ -43,7 +43,7 @@ class _ModificarCitaProfesionalState extends State<ModificarCitaProfesional> {
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'fecha': _fechaController.text,
-        'clave_profesional': widget.claveProfesional,
+        
       }),
     );
 
@@ -63,24 +63,27 @@ class _ModificarCitaProfesionalState extends State<ModificarCitaProfesional> {
   }
 
   Future<void> modificarCita() async {
-    final url = Uri.parse('http://localhost/doctime/BD/modificar_cita_profesional.php');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'clave_cita': widget.cita['Clave_Cita'],
-        'nueva_fecha': _fechaController.text,
-        'nueva_hora': _horaController.text,
-      }),
-    );
+  final url = Uri.parse('http://localhost/doctime/BD/modificar_cita.php');
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({
+      'clave_cita': widget.cita['Clave_Cita'],
+      'nueva_fecha': _fechaController.text,
+      'nueva_hora': _horaController.text,
+      
+    }),
+  );
 
-    final data = json.decode(response.body);
-    if (data['success']) {
-      _showSuccessDialog();
-    } else {
-      _showErrorDialog('Error al modificar la cita: ${data['message']}');
-    }
+  final data = json.decode(response.body);
+
+  if (data['success']) {
+    _showSuccessDialog();
+  } else {
+    _showErrorDialog('Error al modificar la cita: ${data['message']}');
   }
+}
+
 
   void _showSuccessDialog() {
     showDialog(

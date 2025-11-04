@@ -405,17 +405,16 @@ class _CitasPageState extends State<CitasPage> {
                                                     onPressed: () async {
                                                       final modificar = await mostrarDialogoConfirmacionModificar(context);
                                                       if (modificar == true) {
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (context) => ModificarCitaProfesional(
-                                                              correo: widget.correo,
-                                                              password: widget.password,
-                                                              cita: cita,
-                                                              claveProfesional: cita['Clave_Profesional'], // Usa la clave del profesional de la cita
-                                                            ),
-                                                          ),
-                                                        );
+                                                        Navigator.of(context).push(
+  MaterialPageRoute(
+    builder: (_) => ModificarCitaProfesional(
+      correo: widget.correo,
+      password: widget.password,
+      cita: cita,
+    ),
+  ),
+);
+
                                                       }
                                                     },
                                                     style: TextButton.styleFrom(
@@ -434,7 +433,7 @@ class _CitasPageState extends State<CitasPage> {
                                                       final confirmar = await mostrarDialogoConfirmacion(context);
                                                       if (confirmar == true) {
                                                         final claveCita = cita['Clave_Cita'];
-                                                        final url = 'http://localhost/doctime/BD/cancelar_cita_profesional.php';
+                                                        final url = 'http://localhost/doctime/BD/cancelar_cita.php';
 
                                                         try {
                                                           final response = await http.post(
