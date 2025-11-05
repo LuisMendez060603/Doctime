@@ -143,8 +143,9 @@ class VerConsulta extends StatelessWidget {
                                 style: const TextStyle(fontSize: 16)),
                             Text("⏰ Hora: ${cita['hora']}",
                                 style: const TextStyle(fontSize: 16)),
-                            Text("👨‍⚕️ Profesional: ${cita['profesional']}",
-                                style: const TextStyle(fontSize: 16)),
+                            Text("👨‍⚕️ Profesional: ${consulta?['nombre_profesional'] ?? cita['profesional'] ?? 'No disponible'}",
+                                style: const TextStyle(fontSize: 16),
+                                ),
                             const SizedBox(height: 15),
                             const Text('Datos de la Consulta',
                                 style: TextStyle(

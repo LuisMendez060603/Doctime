@@ -22,8 +22,8 @@ if ($conn->connect_error) {
     exit();
 }
 
-// SQL: unir consultas, cita y paciente
-$sql = "
+// Obtener datos de la consulta y paciente
+$sqlConsulta = "
 SELECT 
     c.Clave_Cita,
     c.Sintomas,
@@ -36,13 +36,26 @@ INNER JOIN paciente p ON ci.Clave_Paciente = p.Clave_Paciente
 WHERE c.Clave_Cita = ?
 ";
 
-$stmt = $conn->prepare($sql);
+$stmt = $conn->prepare($sqlConsulta);
 $stmt->bind_param("i", $clave_cita);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result && $result->num_rows > 0) {
     $consulta = $result->fetch_assoc();
+
+    // Obtener el profesional general (por ejemplo, el primero registrado)
+    $profResult = $conn->query("
+        SELECT CONCAT(Nombre, ' ', Apellido) AS nombre_profesional 
+        FROM profesional 
+        ORDER BY Clave_Profesional ASC 
+        LIMIT 1
+    ");
+
+    $prof = ($profResult && $profResult->num_rows > 0) 
+        ? $profResult->fetch_assoc()['nombre_profesional'] 
+        : 'Profesional no registrado';
+
     echo json_encode([
         'success' => true,
         'consulta' => [
@@ -50,7 +63,8 @@ if ($result && $result->num_rows > 0) {
             'sintomas' => $consulta['Sintomas'],
             'diagnostico' => $consulta['Diagnostico'],
             'tratamiento' => $consulta['Tratamiento'],
-            'nombre_paciente' => $consulta['nombre_paciente']
+            'nombre_paciente' => $consulta['nombre_paciente'],
+            'nombre_profesional' => $prof
         ]
     ]);
 } else {

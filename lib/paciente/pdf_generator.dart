@@ -12,10 +12,10 @@ class PdfGenerator {
   static const PdfColor headerBgColor = PdfColor.fromInt(0xFFf0f0f0);
 
   static Future<void> generarPDF(
-      BuildContext context,
-      Map<String, dynamic> cita,
-      Map<String, dynamic>? consulta,
-      ) async {
+    BuildContext context,
+    Map<String, dynamic> cita,
+    Map<String, dynamic>? consulta,
+  ) async {
     final pdf = pw.Document();
 
     // Cargar fuentes
@@ -87,7 +87,14 @@ class PdfGenerator {
                     _buildDetailRow('Paciente:', consulta['nombre_paciente'], ttf, boldTtf),
                   _buildDetailRow('Fecha:', cita['fecha'], ttf, boldTtf),
                   _buildDetailRow('Hora:', cita['hora'], ttf, boldTtf),
-                  _buildDetailRow('Profesional:', cita['profesional'], ttf, boldTtf),
+                  _buildDetailRow(
+                    'Profesional:',
+                    consulta != null && consulta['nombre_profesional'] != null
+                        ? consulta['nombre_profesional']
+                        : 'No especificado',
+                    ttf,
+                    boldTtf,
+                  ),
                 ],
               ),
             ),
@@ -109,7 +116,6 @@ class PdfGenerator {
           content.add(pw.SizedBox(height: 10));
 
           if (consulta != null) {
-            // Usamos _buildKeepTogetherBlock para que el título y texto no se separen
             content.addAll([
               _buildKeepTogetherBlock('Síntomas:', consulta['sintomas'], ttf, boldTtf, headerBgColor),
               pw.SizedBox(height: 15),
@@ -159,41 +165,41 @@ class PdfGenerator {
     print('PDF guardado en: ${file.path}');
 
     if (context.mounted) {
-  showDialog(
-    context: context,
-    builder: (contextDialog) => AlertDialog(
-      title: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            const Icon(Icons.check_circle, color: Colors.green, size: 60),
-            const SizedBox(height: 10),
-            const Text(
-              '¡PDF descargado con éxito!',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+      showDialog(
+        context: context,
+        builder: (contextDialog) => AlertDialog(
+          title: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Icon(Icons.check_circle, color: Colors.green, size: 60),
+                const SizedBox(height: 10),
+                const Text(
+                  '¡PDF descargado con éxito!',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  'Guardado como: $fileName',
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
             ),
-            const SizedBox(height: 5),
-            Text(
-              'Guardado como: $fileName',
-              style: const TextStyle(fontSize: 14),
+          ),
+          actions: <Widget>[
+            Center(
+              child: TextButton(
+                child: const Text('Aceptar'),
+                onPressed: () => Navigator.of(contextDialog).pop(),
+              ),
             ),
           ],
         ),
-      ),
-      actions: <Widget>[
-        Center(
-          child: TextButton(
-            child: const Text('Aceptar'),
-            onPressed: () => Navigator.of(contextDialog).pop(),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
+      );
+    }
   }
-  
+
+  // ---- MÉTODOS AUXILIARES ----
 
   static pw.Widget _buildDetailRow(String label, String value, pw.Font regularFont, pw.Font boldFont) {
     return pw.Padding(
@@ -223,7 +229,6 @@ class PdfGenerator {
     );
   }
 
-  // Bloque que se mantiene junto (título + texto)
   static pw.Widget _buildKeepTogetherBlock(String title, String content, pw.Font regularFont, pw.Font boldFont, PdfColor headerBgColor) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
