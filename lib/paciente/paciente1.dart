@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'patient_dialog.dart';
 import 'detalle_cita1.dart';
 import 'historial_citas.dart';
+import 'ai_chat_dialog.dart';
 
 class Paciente1 extends StatelessWidget {
   final String correo;
@@ -40,6 +41,16 @@ class Paciente1 extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AIChatDialog(correo: correo),
+              );
+            },
+            backgroundColor: const Color(0xFF0077C2),
+            child: const Icon(Icons.smart_toy, color: Colors.white),
           ),
         );
       },
