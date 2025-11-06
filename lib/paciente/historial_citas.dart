@@ -111,7 +111,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text('No', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                    child: const Text('No', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -127,7 +127,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text('Sí, cancelar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                    child: const Text('Sí, cancelar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -161,6 +161,86 @@ class _HistorialCitasState extends State<HistorialCitas> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al cancelar cita: ${data['message']}')),
+      );
+    }
+  }
+
+  Future<void> confirmarModificarCita(Map<String, dynamic> cita) async {
+    final width = MediaQuery.of(context).size.width;
+    final isSmallScreen = width < 600;
+
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'img/Imagen4.png',
+              width: isSmallScreen ? 100 : 150,
+              height: isSmallScreen ? 100 : 150,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              '¿Estás seguro que deseas modificar esta cita?',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 25),
+            Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0077C2),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text('No', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0077C2),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text('Sí, modificar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (confirmar == true) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ModificarCita(
+            correo: widget.correo,
+            password: widget.password,
+            cita: cita,
+            claveProfesional: '7',
+          ),
+        ),
       );
     }
   }
@@ -237,7 +317,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('DocTime', style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold)),
-                            Text('Consultas y citas médicas', style: TextStyle(color: Colors.black, fontSize: 11, fontWeight: FontWeight.w500)),
+                            Text('Consultas y citas médicas', style: TextStyle(color: Color(0xDD000000), fontSize: 11, fontWeight: FontWeight.w500)),
                           ],
                         ),
                       ],
@@ -310,19 +390,7 @@ class _HistorialCitasState extends State<HistorialCitas> {
                           cita: cita,
                           color: Colors.blue[100]!,
                           onCancelar: () => cancelarCita(cita),
-                          onModificar: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ModificarCita(
-                                  correo: widget.correo,
-                                  password: widget.password,
-                                  cita: cita,
-                                  claveProfesional: '7',
-                                ),
-                              ),
-                            );
-                          },
+                          onModificar: () => confirmarModificarCita(cita),
                           onVer: () => verCita(cita),
                         ),
                       ),

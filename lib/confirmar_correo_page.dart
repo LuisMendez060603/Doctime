@@ -12,7 +12,8 @@ class ConfirmarCorreoPage extends StatefulWidget {
 }
 
 class _ConfirmarCorreoPageState extends State<ConfirmarCorreoPage> {
-  final List<TextEditingController> _controllers = List.generate(6, (i) => TextEditingController());
+  final List<TextEditingController> _controllers =
+      List.generate(6, (i) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (i) => FocusNode());
   bool _isLoading = false;
   bool _isResending = false;
@@ -38,9 +39,8 @@ class _ConfirmarCorreoPageState extends State<ConfirmarCorreoPage> {
 
     try {
       final resp = await http.post(url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"correo": widget.correo, "codigo": codigo}),
-      );
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({"correo": widget.correo, "codigo": codigo}));
       final data = jsonDecode(resp.body);
       if (data["success"] == true || data["estado"] == "ok") {
         _showSuccessDialog("¡Cuenta verificada correctamente!");
@@ -60,9 +60,8 @@ class _ConfirmarCorreoPageState extends State<ConfirmarCorreoPage> {
 
     try {
       final resp = await http.post(url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"reenviar": true, "correo": widget.correo}),
-      );
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({"reenviar": true, "correo": widget.correo}));
       final data = jsonDecode(resp.body);
       if (data["success"] == true) {
         _showWarningDialog(data["message"] ?? "Código reenviado");
@@ -75,8 +74,6 @@ class _ConfirmarCorreoPageState extends State<ConfirmarCorreoPage> {
       setState(() => _isResending = false);
     }
   }
-
-  
 
   void _showSuccessDialog(String mensaje) {
     showDialog(
@@ -109,10 +106,10 @@ class _ConfirmarCorreoPageState extends State<ConfirmarCorreoPage> {
               child: const Text('Aceptar'),
               onPressed: () {
                 Navigator.of(context).pop();
-                // Navegar a sesion.dart
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const IniciarSesionPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const IniciarSesionPage()),
                 );
               },
             ),
@@ -131,7 +128,7 @@ class _ConfirmarCorreoPageState extends State<ConfirmarCorreoPage> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Image.asset(
-                'img/Imagen4.png', // Asegúrate de tener esta imagen
+                'img/Imagen4.png',
                 height: 100,
                 width: 100,
               ),
@@ -159,7 +156,6 @@ class _ConfirmarCorreoPageState extends State<ConfirmarCorreoPage> {
     );
   }
 
-  // Distribuye texto pegado en los campos si el usuario pega todo el código
   void _handlePaste(int index, String value) {
     if (value.length > 1) {
       final chars = value.replaceAll(RegExp(r'\s+'), '').split('');
@@ -175,55 +171,11 @@ class _ConfirmarCorreoPageState extends State<ConfirmarCorreoPage> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final cardWidth = width > 500 ? 480.0 : width - 40;
+
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
         backgroundColor: const Color(0xFFF3F6FB),
-        // Reemplaza todo el AppBar existente con este
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                padding: const EdgeInsets.all(5),
-                child: Image.asset("img/logo.png"),
-              ),
-              Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 5),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        'DocTime',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'Consultas y citas médicas',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
         body: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 24),
@@ -232,42 +184,106 @@ class _ConfirmarCorreoPageState extends State<ConfirmarCorreoPage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 20, offset: const Offset(0, 8))],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
+                  const SizedBox(height: 25),
+                  Image.asset(
+                    "img/logo.png",
+                    height: 80,
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'DocTime',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const Text(
+                    'Consultas y citas médicas',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color(0xDD000000), // negro con 87% de opacidad (~black87)
+                      fontWeight: FontWeight.w500, // un poco más gruesa que normal
+                    ),
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  // 🔹 Cuadro azul mejorado con bordes redondeados
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 18, horizontal: 18),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [_primary, _primary.withOpacity(0.9)]),
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                      gradient: LinearGradient(
+                        colors: [_primary, _primary.withOpacity(0.9)],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
                     ),
                     child: Row(
                       children: [
                         Container(
                           width: 52,
                           height: 52,
-                          decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(12)),
-                          child: const Icon(Icons.mark_email_unread, color: Colors.white),
+                          decoration: BoxDecoration(
+                            color: Colors.white24,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.mark_email_unread,
+                              color: Colors.white),
                         ),
                         const SizedBox(width: 12),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: const [
-                            Text("Verifica tu correo", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                            Text(
+                              "Verifica tu correo",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                            ),
                             SizedBox(height: 4),
-                            Text("Introduce el código enviado", style: TextStyle(color: Colors.white70, fontSize: 13)),
+                            Text(
+                              "Introduce el código enviado",
+                              style: TextStyle(
+                                  color: Colors.white70, fontSize: 13),
+                            ),
                           ],
                         )
                       ],
                     ),
                   ),
+
+                  // Cuerpo principal
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 22),
                     child: Column(
                       children: [
-                        Text("Código enviado a ${widget.correo}", textAlign: TextAlign.center, style: TextStyle(color: Colors.grey[700])),
+                        Text(
+                          "Código enviado a ${widget.correo}",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
                         const SizedBox(height: 18),
 
                         // Inputs
@@ -283,28 +299,34 @@ class _ConfirmarCorreoPageState extends State<ConfirmarCorreoPage> {
                                 textAlign: TextAlign.center,
                                 keyboardType: TextInputType.number,
                                 maxLength: 1,
-                                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontSize: 22, fontWeight: FontWeight.bold),
                                 decoration: InputDecoration(
                                   counterText: "",
                                   filled: true,
                                   fillColor: Colors.white,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: _primary.withOpacity(0.9), width: 2),
+                                    borderSide: BorderSide(
+                                        color: _primary.withOpacity(0.9),
+                                        width: 2),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: _primary, width: 3),
+                                    borderSide:
+                                        BorderSide(color: _primary, width: 3),
                                   ),
                                 ),
                                 onChanged: (value) {
                                   if (value.isEmpty) {
-                                    if (index > 0) _focusNodes[index - 1].requestFocus();
+                                    if (index > 0)
+                                      _focusNodes[index - 1].requestFocus();
                                   } else {
                                     if (value.length > 1) {
                                       _handlePaste(index, value);
                                     } else {
-                                      if (index < 5) _focusNodes[index + 1].requestFocus();
+                                      if (index < 5)
+                                        _focusNodes[index + 1].requestFocus();
                                     }
                                   }
                                 },
@@ -318,27 +340,18 @@ class _ConfirmarCorreoPageState extends State<ConfirmarCorreoPage> {
 
                         const SizedBox(height: 22),
 
-                        // Botones
                         Row(
                           children: [
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: _isLoading ? null : _verificarCodigo,
+                                onPressed:
+                                    _isLoading ? null : _verificarCodigo,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: _primary,
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 14),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ).copyWith(
-                                  overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                                    (Set<MaterialState> states) {
-                                      if (states.contains(MaterialState.hovered))
-                                        return Colors.blue[800]; // Color cuando el mouse está encima
-                                      if (states.contains(MaterialState.pressed))
-                                        return Colors.blue[900]; // Color cuando se presiona
-                                      return null;
-                                    },
                                   ),
                                 ),
                                 child: _isLoading
@@ -353,7 +366,7 @@ class _ConfirmarCorreoPageState extends State<ConfirmarCorreoPage> {
                                     : const Text(
                                         "Verificar",
                                         style: TextStyle(
-                                          color: Colors.white, // Texto en color blanco
+                                          color: Colors.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -368,13 +381,23 @@ class _ConfirmarCorreoPageState extends State<ConfirmarCorreoPage> {
                         TextButton.icon(
                           onPressed: _isResending ? null : _reenviarCodigo,
                           icon: _isResending
-                              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2))
                               : Icon(Icons.refresh, color: _primary),
-                          label: Text("Reenviar código", style: TextStyle(color: _primary)),
+                          label: Text("Reenviar código",
+                              style: TextStyle(color: _primary)),
                         ),
 
                         const SizedBox(height: 8),
-                        Text("Si no recibes el código revisa la carpeta de spam.", style: TextStyle(color: Colors.grey[600], fontSize: 12), textAlign: TextAlign.center),
+                        Text(
+                          "",
+                          style:
+                              TextStyle(color: Colors.grey[600], fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ),
                         const SizedBox(height: 18),
                       ],
                     ),
