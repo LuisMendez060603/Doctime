@@ -156,8 +156,8 @@ class _IniciarSesionPageState extends State<IniciarSesionPage> {
       ),
     );
   }
-
-  @override
+  bool _obscurePassword = true; 
+  
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F9), // Fondo azul agua
@@ -266,16 +266,30 @@ class _IniciarSesionPageState extends State<IniciarSesionPage> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      TextField(
-                        controller: _passwordController,
-                        style: const TextStyle(color: Colors.black),
-                        decoration: const InputDecoration(
-                          labelText: 'Contraseña',
-                          labelStyle: TextStyle(color: Colors.black),
-                          border: OutlineInputBorder(),
+                     
+
+                        TextField(
+                          controller: _passwordController,
+                          style: const TextStyle(color: Colors.black),
+                          obscureText: _obscurePassword, // usa la variable
+                          decoration: InputDecoration(
+                            labelText: 'Contraseña',
+                            labelStyle: const TextStyle(color: Colors.black),
+                            border: const OutlineInputBorder(),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                color: Colors.black54,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
+                            ),
+                          ),
                         ),
-                        obscureText: true,
-                      ),
+
                       const SizedBox(height: 15),
                       ElevatedButton(
                         onPressed: _iniciarSesion,
@@ -302,18 +316,18 @@ class _IniciarSesionPageState extends State<IniciarSesionPage> {
                       ),
                       const SizedBox(height: 10),
                       TextButton(
-  onPressed: () {
-    // Aquí es donde navegas al archivo contraseña.dart
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        // Utiliza el nombre de la CLASE que está en contraseña.dart
-        builder: (context) => const RecuperacionContrasenaScreen(),
-      ),
-    );
-  },
-  child: const Text('¿Olvidaste tu contraseña?'),
-),
+                        onPressed: () {
+                          // Aquí es donde navegas al archivo contraseña.dart
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              // Utiliza el nombre de la CLASE que está en contraseña.dart
+                              builder: (context) => const RecuperacionContrasenaScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text('¿Olvidaste tu contraseña?'),
+                      ),
                       TextButton(
                         onPressed: () {
                           Navigator.push(

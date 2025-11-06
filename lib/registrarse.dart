@@ -27,10 +27,14 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
   final TextEditingController _confirmarPasswordController = TextEditingController();
   final TextEditingController _especialidadController = TextEditingController();
   final TextEditingController _direccionController = TextEditingController();
+  final TextEditingController _codigoProfesionalController = TextEditingController();
 
   String _selectedRole = 'paciente';
   bool _verPassword = false;
   bool _verConfirmarPassword = false;
+
+  // Código secreto de los profesionales
+  final String _secretCode = 'PROF2025';
 
   bool _esPasswordSegura(String password) {
     final regex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$');
@@ -89,6 +93,11 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
         _showWarningDialog("Por favor, complete los datos del profesional.");
         return;
       }
+
+      if (_codigoProfesionalController.text.trim() != _secretCode) {
+        _showWarningDialog("Código profesional incorrecto.");
+        return;
+      }
     }
 
     final url = Uri.parse('http://localhost/doctime/BD/registrar.php');
@@ -102,11 +111,13 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
     };
 
     if (_selectedRole == 'profesional') {
-      body.addAll({
-        "Especialidad": _especialidadController.text.trim(),
-        "Direccion": _direccionController.text.trim(),
-      });
-    }
+  body.addAll({
+    "Especialidad": _especialidadController.text.trim(),
+    "Direccion": _direccionController.text.trim(),
+    "Codigo": _codigoProfesionalController.text.trim(), // 🔹 ¡Clave!
+  });
+}
+
 
     try {
       final response = await http.post(
@@ -208,63 +219,61 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
           child: Column(
             children: [
               // 🔹 Cabecera personalizada (reemplazo del AppBar)
-                Stack(
-                  children: [
-                    // Flecha de regresar alineada a la izquierda y centrada verticalmente
-                    Positioned(
-                      left: 0,
-                      top: 60, // 🔹 Ajusta este valor si la quieres un poco más arriba o abajo
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Color(0xFF0077C2)),
-                        onPressed: () => Navigator.of(context).pop(),
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
+              Stack(
+                children: [
+                  // Flecha de regresar
+                  Positioned(
+                    left: 0,
+                    top: 60,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Color(0xFF0077C2)),
+                      onPressed: () => Navigator.of(context).pop(),
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                    ),
+                  ),
+                  // Contenido centrado (logo + texto)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 40, bottom: 10),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 80,
+                            padding: const EdgeInsets.all(5),
+                            child: Image.asset("img/logo.png", fit: BoxFit.contain),
+                          ),
+                          const SizedBox(width: 8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                'DocTime',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                'Consultas y citas médicas',
+                                style: TextStyle(
+                                  color: Color.fromARGB(230, 0, 0, 0),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-
-                    // Contenido centrado (logo + texto)
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 40, bottom: 10),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 80,
-                              height: 80,
-                              padding: const EdgeInsets.all(5),
-                              child: Image.asset("img/logo.png", fit: BoxFit.contain),
-                            ),
-                            const SizedBox(width: 8),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  'DocTime',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Text(
-                                  'Consultas y citas médicas',
-                                  style: TextStyle(
-                                    color: Color.fromARGB(230, 0, 0, 0),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
+                  ),
+                ],
+              ),
 
               // 🔹 Contenido del formulario
               Padding(
@@ -285,6 +294,7 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
                         onRoleChanged: (v) => setState(() => _selectedRole = v),
                         especialidadController: _especialidadController,
                         direccionController: _direccionController,
+                        codigoProfesionalController: _codigoProfesionalController,
                         showWarning: (msg) => _showWarningDialog(msg),
                         verPassword: _verPassword,
                         verConfirmar: _verConfirmarPassword,
@@ -316,6 +326,7 @@ class Frame9 extends StatelessWidget {
   final ValueChanged<String> onRoleChanged;
   final TextEditingController especialidadController;
   final TextEditingController direccionController;
+  final TextEditingController codigoProfesionalController;
   final ValueChanged<String> showWarning;
   final bool verPassword;
   final bool verConfirmar;
@@ -335,6 +346,7 @@ class Frame9 extends StatelessWidget {
     required this.onRoleChanged,
     required this.especialidadController,
     required this.direccionController,
+    required this.codigoProfesionalController,
     required this.showWarning,
     required this.verPassword,
     required this.verConfirmar,
@@ -419,6 +431,10 @@ class Frame9 extends StatelessWidget {
           const SizedBox(height: 12),
           _buildTextField(label: 'Especialidad', hint: 'Ingresa tu especialidad', controller: especialidadController),
           _buildTextField(label: 'Dirección', hint: 'Ingresa tu dirección', controller: direccionController),
+          _buildTextField(
+              label: 'Código Profesional',
+              hint: 'Ingresa tu código secreto',
+              controller: codigoProfesionalController),
         ],
         const SizedBox(height: 16),
         ElevatedButton(
