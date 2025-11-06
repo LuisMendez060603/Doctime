@@ -1,12 +1,11 @@
 import 'package:doctime/registrarse.dart';
-import 'package:doctime/sesion.dart'; // Importa sesion.dart
+import 'package:doctime/sesion.dart'; 
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart'; // Agregado para localización
-import 'database_helper.dart'; // Importa el helper de base de datos
+import 'package:flutter_localizations/flutter_localizations.dart'; 
+import 'database_helper.dart'; 
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  // Verifica la conexión a la base de datos al inicio
   DatabaseHelper.verificarConexion();
   runApp(const MyApp());
 }
@@ -41,22 +40,33 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = screenWidth > 500 ? 480.0 : screenWidth - 40;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF0F5F9), // Fondo suave
       body: Center(
-        child: Container(
-          width: 420,
-          height: 829,
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Logo y título
-              Container(
-                width: double.infinity,
-                child: Padding(
+        child: SingleChildScrollView(
+          child: Container(
+            width: cardWidth,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Logo y título
+                Container(
+                  width: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -64,14 +74,6 @@ class MyHomePage extends StatelessWidget {
                       Flexible(
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
-                          decoration: const ShapeDecoration(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(50),
-                                topRight: Radius.circular(50),
-                              ),
-                            ),
-                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -114,98 +116,98 @@ class MyHomePage extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              // Mensaje de bienvenida
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: const [
-                    Text(
-                      '¿Requieres Atención Médica?',
-                      style: TextStyle(
-                        color: Color(0xFF0077C2),
-                        fontSize: 23,
-                        fontFamily: 'Euclid Circular A',
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
-              // Botones
-              Container(
-                width: double.infinity,
-                height: 208,
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-                          if (states.contains(MaterialState.hovered)) {
-                            return const Color(0xFF005A9C); // hover
-                          }
-                          return const Color(0xFF0077C2); // normal
-                        }),
-                        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                        minimumSize: MaterialStateProperty.all(const Size(332, 47)),
-                        shape: MaterialStateProperty.all(
-                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const IniciarSesionPage()),
-                        );
-                      },
-                      child: const Text(
-                        'Iniciar Sesión',
+                const SizedBox(height: 10),
+                // Mensaje de bienvenida
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: const [
+                      Text(
+                        '¿Requieres Atención Médica?',
                         style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF0077C2),
+                          fontSize: 23,
                           fontFamily: 'Euclid Circular A',
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-                          if (states.contains(MaterialState.hovered)) {
-                            return const Color(0xFF005A9C); // hover
-                          }
-                          return const Color(0xFF0077C2); // normal
-                        }),
-                        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                        minimumSize: MaterialStateProperty.all(const Size(332, 47)),
-                        shape: MaterialStateProperty.all(
-                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const RegistrarsePage()),
-                        );
-                      },
-                      child: const Text(
-                        'Registrarse',
-                        style: TextStyle(
-                          fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Euclid Circular A',
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 15),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                // Botones
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return const Color(0xFF005A9C); 
+                            }
+                            return const Color(0xFF0077C2); 
+                          }),
+                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                          minimumSize: MaterialStateProperty.all(const Size(332, 47)),
+                          shape: MaterialStateProperty.all(
+                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const IniciarSesionPage()),
+                          );
+                        },
+                        child: const Text(
+                          'Iniciar Sesión',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Euclid Circular A',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return const Color(0xFF005A9C); 
+                            }
+                            return const Color(0xFF0077C2); 
+                          }),
+                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                          minimumSize: MaterialStateProperty.all(const Size(332, 47)),
+                          shape: MaterialStateProperty.all(
+                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RegistrarsePage()),
+                          );
+                        },
+                        child: const Text(
+                          'Registrarse',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Euclid Circular A',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
