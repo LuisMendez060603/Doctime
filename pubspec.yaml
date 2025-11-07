@@ -47,6 +47,7 @@ flutter:
     - img/Frame (7).png
     - img/2.jpg
     - img/1.jpg
+    - img/3.png
     # 📂 Fuente Roboto para PDF Unicode
     - assets/fonts/Roboto-Regular.ttf
     - assets/fonts/Roboto-Bold.ttf

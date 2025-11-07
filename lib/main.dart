@@ -65,7 +65,7 @@ class MyHomePage extends StatelessWidget {
           child: Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("img/2.jpg"), // Cambia por tu imagen
+                image: AssetImage("img/3.png"), // Cambia por tu imagen
                 fit: BoxFit.cover,
               ),
             ),
