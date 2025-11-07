@@ -14,6 +14,7 @@ class _AIChatDialogState extends State<AIChatDialog> {
   final TextEditingController _messageController = TextEditingController();
   final List<ChatMessage> _messages = [];
   bool _isTyping = false;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +57,7 @@ class _AIChatDialogState extends State<AIChatDialog> {
             const Divider(),
             Expanded(
               child: ListView.builder(
+                controller: _scrollController,
                 itemCount: _messages.length,
                 itemBuilder: (context, index) => _messages[index],
               ),
@@ -114,6 +116,15 @@ class _AIChatDialogState extends State<AIChatDialog> {
         text: response,
         isUser: false,
       ));
+    });
+
+    // Scroll al final
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     });
   }
 }
