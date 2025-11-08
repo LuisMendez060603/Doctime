@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'patient_dialog.dart';
 import 'detalle_cita1.dart';
 import 'historial_citas.dart';
 import 'ai_chat_dialog.dart';
-import 'detalle_datos_clinicos.dart'; // 🔹 Nueva pantalla
+import 'detalle_datos_clinicos.dart';
 
 class Paciente1 extends StatelessWidget {
   final String correo;
@@ -37,7 +39,7 @@ class Paciente1 extends StatelessWidget {
                     SizedBox(height: 15 * scale),
                     HistorialCard(correo: correo, password: password, scale: scale),
                     SizedBox(height: 15 * scale),
-                    DatosClinicosCard(correo: correo, password: password, scale: scale), // 🔹 Nueva tarjeta
+                    DatosClinicosCard(correo: correo, password: password, scale: scale),
                     SizedBox(height: 20 * scale),
                   ],
                 ),
@@ -177,6 +179,65 @@ class AgendaCard extends StatelessWidget {
 
   const AgendaCard({super.key, required this.correo, required this.password, required this.scale});
 
+  Future<bool> verificarDatosClinicos() async {
+    final url = Uri.parse("http://localhost/doctime/BD/verificar_datos_clinicos.php");
+    final response = await http.post(url, body: {
+      'correo': correo,
+      'password': password,
+    });
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['tiene_datos'] == true;
+    } else {
+      return false;
+    }
+  }
+
+  /// 🔹 Nuevo diálogo con diseño tipo "Cita Modificada"
+  void mostrarDialogoSinDatos(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Image.asset(
+              'img/Imagen5.png', // asegúrate de tener la imagen en tu carpeta img/
+              height: 100,
+              width: 100,
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Datos clínicos requeridos',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+      content: const Text(
+        'Por favor completa tus datos clínicos antes de agendar una cita.',
+        textAlign: TextAlign.center,
+      ),
+      actions: <Widget>[
+        Center(
+          child: TextButton(
+            child: const Text(
+              'Aceptar',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0077C2)),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -186,7 +247,13 @@ class AgendaCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20 * scale),
         border: Border.all(color: Colors.black.withOpacity(0.1)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5 * scale, offset: Offset(0, 2 * scale))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 5 * scale,
+            offset: Offset(0, 2 * scale),
+          ),
+        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -215,13 +282,18 @@ class AgendaCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetalleCita1(correo: correo, password: password),
-                  ),
-                );
+              onPressed: () async {
+                final tieneDatos = await verificarDatosClinicos();
+                if (tieneDatos) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetalleCita1(correo: correo, password: password),
+                    ),
+                  );
+                } else {
+                  mostrarDialogoSinDatos(context);
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0077C2),
@@ -313,7 +385,7 @@ class HistorialCard extends StatelessWidget {
 class DatosClinicosCard extends StatelessWidget {
   final String correo;
   final String password;
-  final String? clavePaciente; // 🔹 Nuevo parámetro opcional
+  final String? clavePaciente;
   final double scale;
 
   const DatosClinicosCard({
@@ -321,8 +393,9 @@ class DatosClinicosCard extends StatelessWidget {
     required this.correo,
     required this.password,
     required this.scale,
-    this.clavePaciente, // 🔹 Se agrega aquí también
+    this.clavePaciente,
   });
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -363,16 +436,15 @@ class DatosClinicosCard extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => DetalleDatosClinicosPage(
-      correo: correo,
-      password: password,
-      clavePaciente: clavePaciente, // 🔹 aquí la pasas directamente
-    ),
-  ),
-);
-
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetalleDatosClinicosPage(
+                      correo: correo,
+                      password: password,
+                      clavePaciente: clavePaciente,
+                    ),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0077C2),

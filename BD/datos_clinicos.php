@@ -7,14 +7,14 @@ header("Content-Type: application/json; charset=UTF-8");
 // 🔹 Conexión a la base de datos
 $conn = new mysqli("localhost", "root", "", "doctime");
 if ($conn->connect_error) {
-    die(json_encode(['success' => false, 'message' => 'Error en la conexión: ' . $conn->connect_error]));
+    die(json_encode(['success' => false, 'message' => 'Error en la conexión con la base de datos.']));
 }
 
 // 🔹 Recibir datos desde Flutter
 $accion = $_POST['accion'] ?? '';
-$correo = $_POST['correo'] ?? '';
-$password = $_POST['password'] ?? '';
-$clavePaciente = $_POST['clave_paciente'] ?? null; // ✅ Puede venir directo desde Flutter
+$correo = trim($_POST['correo'] ?? '');
+$password = trim($_POST['password'] ?? '');
+$clavePaciente = $_POST['clave_paciente'] ?? null;
 
 // 🔹 Validar autenticación
 if (empty($correo) || empty($password)) {
@@ -22,9 +22,9 @@ if (empty($correo) || empty($password)) {
     exit;
 }
 
-// 🔹 Si no se pasa clavePaciente, buscarla en la BD
+// 🔹 Buscar clave del paciente si no se pasó directamente
 if (!$clavePaciente) {
-    $sql = "SELECT Clave_Paciente FROM paciente WHERE Correo = '$correo' AND password = '$password'";
+    $sql = "SELECT Clave_Paciente, password FROM paciente WHERE Correo = '$correo'";
     $result = $conn->query($sql);
 
     if ($result->num_rows === 0) {
@@ -33,88 +33,78 @@ if (!$clavePaciente) {
     }
 
     $row = $result->fetch_assoc();
+    if (!password_verify($password, $row['password'])) {
+        echo json_encode(["success" => false, "message" => "Contraseña incorrecta"]);
+        exit;
+    }
+
     $clavePaciente = $row['Clave_Paciente'];
 }
 
 // 🔹 Acción: obtener datos clínicos
 if ($accion === 'obtener') {
-    $sqlDatos = "SELECT * FROM datos_clinicos WHERE Clave_Paciente = '$clavePaciente'";
-    $resultDatos = $conn->query($sqlDatos);
+    $sql = "SELECT tipo_sangre, alergias, enfermedades_cronicas, medicamentos_actuales,
+                   antecedentes_medicos, observaciones, peso, altura, fumador, consumo_alcohol
+            FROM datos_clinicos WHERE Clave_Paciente = '$clavePaciente'";
+    $result = $conn->query($sql);
 
-    if ($resultDatos->num_rows > 0) {
-        $datos = $resultDatos->fetch_assoc();
-        $datos['Clave_Paciente'] = $clavePaciente; // 🔹 Añadir clave al array
-        echo json_encode(["success" => true, "data" => $datos]);
+    if ($result->num_rows > 0) {
+        echo json_encode(["success" => true, "data" => $result->fetch_assoc()]);
     } else {
-        // 🔹 Si no hay datos clínicos, aun así devolvemos la clave
-        echo json_encode(["success" => false, "message" => "No hay datos clínicos registrados", "Clave_Paciente" => $clavePaciente]);
+        echo json_encode(["success" => false, "message" => "No hay datos clínicos registrados"]);
     }
     exit;
 }
 
 // 🔹 Acción: guardar o actualizar datos clínicos
 if ($accion === 'guardar') {
-    $tipo_sangre = $_POST['tipo_sangre'] ?? '';
-    $alergias = $_POST['alergias'] ?? '';
-    $enfermedades = $_POST['enfermedades_cronicas'] ?? '';
-    $medicamentos = $_POST['medicamentos_actuales'] ?? '';
-    $antecedentes = $_POST['antecedentes_medicos'] ?? '';
-    $observaciones = $_POST['observaciones'] ?? '';
-    $peso = $_POST['peso'] ?? null;
-    $altura = $_POST['altura'] ?? null;
-    $fumador = $_POST['fumador'] ?? 'No';
-    $consumo_alcohol = $_POST['consumo_alcohol'] ?? 'No';
+    $campos = [
+        'tipo_sangre', 'alergias', 'enfermedades_cronicas', 'medicamentos_actuales',
+        'antecedentes_medicos', 'observaciones', 'peso', 'altura', 'fumador', 'consumo_alcohol'
+    ];
 
-    // 🔹 Verificar si ya existen datos clínicos del paciente
-    $sqlCheck = "SELECT * FROM datos_clinicos WHERE Clave_Paciente = '$clavePaciente'";
-    $resultCheck = $conn->query($sqlCheck);
-
-    if ($resultCheck->num_rows > 0) {
-        // 🔹 Actualizar datos existentes
-        $sqlUpdate = "UPDATE datos_clinicos SET
-            tipo_sangre = '$tipo_sangre',
-            alergias = '$alergias',
-            enfermedades_cronicas = '$enfermedades',
-            medicamentos_actuales = '$medicamentos',
-            antecedentes_medicos = '$antecedentes',
-            observaciones = '$observaciones',
-            peso = " . ($peso !== null && $peso !== '' ? $peso : 'NULL') . ",
-            altura = " . ($altura !== null && $altura !== '' ? $altura : 'NULL') . ",
-            fumador = '$fumador',
-            consumo_alcohol = '$consumo_alcohol',
-            fecha_actualizacion = NOW()
-            WHERE Clave_Paciente = '$clavePaciente'";
-
-        if ($conn->query($sqlUpdate)) {
-            echo json_encode(["success" => true, "message" => "Datos clínicos actualizados correctamente", "Clave_Paciente" => $clavePaciente]);
-        } else {
-            echo json_encode(["success" => false, "message" => "Error al actualizar los datos clínicos", "Clave_Paciente" => $clavePaciente]);
-        }
-    } else {
-        // 🔹 Insertar nuevos datos
-        $sqlInsert = "INSERT INTO datos_clinicos (
-            Clave_Paciente, tipo_sangre, alergias, enfermedades_cronicas,
-            medicamentos_actuales, antecedentes_medicos, observaciones,
-            peso, altura, fumador, consumo_alcohol
-        ) VALUES (
-            '$clavePaciente', '$tipo_sangre', '$alergias', '$enfermedades',
-            '$medicamentos', '$antecedentes', '$observaciones',
-            " . ($peso !== null && $peso !== '' ? $peso : 'NULL') . ",
-            " . ($altura !== null && $altura !== '' ? $altura : 'NULL') . ",
-            '$fumador', '$consumo_alcohol'
-        )";
-
-        if ($conn->query($sqlInsert)) {
-            echo json_encode(["success" => true, "message" => "Datos clínicos registrados correctamente", "Clave_Paciente" => $clavePaciente]);
-        } else {
-            echo json_encode(["success" => false, "message" => "Error al guardar los datos clínicos", "Clave_Paciente" => $clavePaciente]);
-        }
+    $valores = [];
+    foreach ($campos as $campo) {
+        $valores[$campo] = $conn->real_escape_string($_POST[$campo] ?? '');
     }
 
+    // Verificar si ya existen datos
+    $check = $conn->query("SELECT id_dato FROM datos_clinicos WHERE Clave_Paciente = '$clavePaciente'");
+    if ($check->num_rows > 0) {
+        // Actualizar
+        $sql = "UPDATE datos_clinicos SET
+            tipo_sangre = '{$valores['tipo_sangre']}',
+            alergias = '{$valores['alergias']}',
+            enfermedades_cronicas = '{$valores['enfermedades_cronicas']}',
+            medicamentos_actuales = '{$valores['medicamentos_actuales']}',
+            antecedentes_medicos = '{$valores['antecedentes_medicos']}',
+            observaciones = '{$valores['observaciones']}',
+            peso = NULLIF('{$valores['peso']}', ''),
+            altura = NULLIF('{$valores['altura']}', ''),
+            fumador = NULLIF('{$valores['fumador']}', ''),
+            consumo_alcohol = NULLIF('{$valores['consumo_alcohol']}', ''),
+            fecha_actualizacion = NOW()
+            WHERE Clave_Paciente = '$clavePaciente'";
+        $ok = $conn->query($sql);
+        echo json_encode(["success" => $ok, "message" => $ok ? "Datos clínicos actualizados correctamente" : "Error al actualizar datos clínicos"]);
+    } else {
+        // Insertar
+        $sql = "INSERT INTO datos_clinicos (
+            Clave_Paciente, tipo_sangre, alergias, enfermedades_cronicas, medicamentos_actuales,
+            antecedentes_medicos, observaciones, peso, altura, fumador, consumo_alcohol
+        ) VALUES (
+            '$clavePaciente', '{$valores['tipo_sangre']}', '{$valores['alergias']}',
+            '{$valores['enfermedades_cronicas']}', '{$valores['medicamentos_actuales']}',
+            '{$valores['antecedentes_medicos']}', '{$valores['observaciones']}',
+            NULLIF('{$valores['peso']}', ''), NULLIF('{$valores['altura']}', ''),
+            NULLIF('{$valores['fumador']}', ''), NULLIF('{$valores['consumo_alcohol']}', '')
+        )";
+        $ok = $conn->query($sql);
+        echo json_encode(["success" => $ok, "message" => $ok ? "Datos clínicos guardados correctamente" : "Error al guardar datos clínicos"]);
+    }
     exit;
 }
 
-// 🔹 Acción no válida
-echo json_encode(["success" => false, "message" => "Acción no válida", "Clave_Paciente" => $clavePaciente]);
+echo json_encode(["success" => false, "message" => "Acción no válida"]);
 $conn->close();
 ?>
