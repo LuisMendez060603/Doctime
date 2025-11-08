@@ -171,9 +171,12 @@ class _IniciarSesionPageState extends State<IniciarSesionPage> {
         // 🩺 Panel de login (izquierda)
         Expanded(
           flex: 1,
-          child: Center(
-            child: SingleChildScrollView(
-              child: _buildLoginCard(context, maxWidth: 420),
+          child: Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("img/2.jpg"), // Cambia por tu imagen
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
@@ -181,13 +184,8 @@ class _IniciarSesionPageState extends State<IniciarSesionPage> {
         // 🖼️ Imagen derecha
         Expanded(
           flex: 1,
-          child: Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("img/2.jpg"), // tu imagen
-                fit: BoxFit.cover,
-              ),
-            ),
+          child: Center(
+            child: _buildLoginCard(context, maxWidth: 450),
           ),
         ),
       ],
