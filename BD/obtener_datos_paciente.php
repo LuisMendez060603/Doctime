@@ -21,7 +21,7 @@ if ($conn->connect_error) {
 }
 
 // Consulta para obtener los datos del paciente asociado a la cita
-$sql = "SELECT p.Nombre, p.Apellido, p.Telefono, p.Correo
+$sql = "SELECT p.Clave_Paciente, p.Nombre, p.Apellido, p.Telefono, p.Correo
         FROM paciente p
         JOIN cita c ON p.Clave_Paciente = c.Clave_Paciente
         WHERE c.Clave_Cita = ?";
