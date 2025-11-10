@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
 import 'patient_dialog.dart';
 
 class DetalleDatosClinicosPage extends StatefulWidget {
@@ -32,21 +33,34 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
 
   // Datos clínicos / antecedentes
   final tipoSangreController = TextEditingController();
+  // alergias ahora: selector + detalle
   final alergiasController = TextEditingController();
+  String? alergiasSiNo;
+
   final enfermedadesController = TextEditingController();
+  // medicamentos: selector + detalle
   final medicamentosController = TextEditingController();
+  String? medicamentosSiNo;
+
   final antecedentesController = TextEditingController();
   final observacionesController = TextEditingController();
   final pesoController = TextEditingController();
   final alturaController = TextEditingController();
 
   // Antecedentes personales patológicos (detalle)
-  final diabetesController = TextEditingController(); // "Sí/No/Desde cuándo"
-  final hipertensionController = TextEditingController(); // "Sí/No/Desde cuándo"
-  final cirugiasController = TextEditingController(); // cirugías previas y fechas
+  String? diabetesSiNo;
+  final diabetesDesdeController = TextEditingController(); // detalle "desde cuándo"
+  String? hipertensionSiNo;
+  final hipertensionDesdeController = TextEditingController();
+
+  final cirugiasController = TextEditingController(); // detalle
+  String? cirugiasSiNo;
+
   // Antecedentes no patológicos
-  final tabaquismoController = TextEditingController(); // "Sí/No, cuánto y por cuánto tiempo"
-  final alcoholismoController = TextEditingController(); // "Sí/No, frecuencia y cantidad"
+  final tabaquismoController = TextEditingController(); // detalle tabaquismo
+  String? fumador;
+  final alcoholismoController = TextEditingController(); // detalle alcohol
+  String? consumoAlcohol;
   final alimentacionController = TextEditingController(); // tipo de dieta, comidas
   final ejercicioController = TextEditingController(); // tipo, frecuencia, duración
 
@@ -58,8 +72,6 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
   // Padecimiento actual
   final padecimientoActualController = TextEditingController();
 
-  String? fumador;
-  String? consumoAlcohol;
   bool cargando = true;
   Map<String, dynamic> datosOriginales = {};
 
@@ -69,8 +81,59 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
     obtenerDatosClinicos();
   }
 
+  // Normaliza valores de sí/no (acepta 1/0, "si","sí","no", true/false, etc.)
+  String? _normalizeSiNo(dynamic v) {
+    if (v == null) return null;
+    final s = v.toString().trim().toLowerCase();
+    if (s == '' || s == 'null') return null;
+    if (s == '1' || s == 'si' || s == 'sí' || s == 's' || s == 'true') return 'Sí';
+    if (s == '0' || s == 'no' || s == 'n' || s == 'false') return 'No';
+    if (s == 'sí' || s == 'si') return 'Sí';
+    if (s == 'no') return 'No';
+    return v.toString();
+  }
+
+  // Evita crash cuando el valor actual no está en la lista de opciones
+  String? _safeDropdownValue(String? val, List<String> opciones) {
+    if (val == null) return null;
+    return opciones.contains(val) ? val : null;
+  }
+
+  // Parsea campos que vienen como "Sí - desde 2010" o "No" o "Desde 2010"
+  Map<String, String?> _splitSiDetalle(dynamic v) {
+    if (v == null) return {'siNo': null, 'detalle': ''};
+    final s = v.toString().trim();
+    final lower = s.toLowerCase();
+    String? siNo;
+    String detalle = '';
+    if (lower.startsWith('sí') || lower.startsWith('si') || lower.startsWith('sí') || lower.startsWith('si ')) {
+      siNo = 'Sí';
+      // después de primer '-' o ':' o 'desde'
+      final idx = s.indexOf('-');
+      if (idx >= 0 && idx + 1 < s.length) {
+        detalle = s.substring(idx + 1).trim();
+      } else {
+        // buscar 'desde'
+        final desdeIndex = lower.indexOf('desde');
+        if (desdeIndex >= 0) detalle = s.substring(desdeIndex).trim();
+      }
+    } else if (lower.startsWith('no')) {
+      siNo = 'No';
+      // detalle vacio
+    } else if (lower.contains('desde')) {
+      siNo = 'Sí';
+      detalle = s;
+    } else {
+      // fallback: dejar todo como detalle
+      detalle = s;
+    }
+    return {'siNo': siNo, 'detalle': detalle};
+  }
+
   Future<void> obtenerDatosClinicos() async {
-    setState(() { cargando = true; });
+    setState(() {
+      cargando = true;
+    });
     try {
       final uri = Uri.parse("http://localhost/doctime/BD/obtenerDatosClinicos.php");
       final response = await http.post(uri, body: {
@@ -83,8 +146,10 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
       print('obtenerDatosClinicos HTTP ${response.statusCode}: $body');
 
       if (!body.startsWith('{')) {
-        // respuesta inválida
-        setState(() { datosOriginales = {}; cargando = false; });
+        setState(() {
+          datosOriginales = {};
+          cargando = false;
+        });
         return;
       }
 
@@ -100,31 +165,61 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
           telefonoController.text = d["telefono"] ?? '';
           direccionController.text = d["direccion"] ?? '';
           tipoSangreController.text = d["tipo_sangre"] ?? '';
-          alergiasController.text = d["alergias"] ?? '';
+
+          // Alergias: parsear si/no + detalle
+          final parsedAler = _splitSiDetalle(d["alergias"]);
+          alergiasSiNo = parsedAler['siNo'];
+          alergiasController.text = parsedAler['detalle'] ?? '';
+
           enfermedadesController.text = d["enfermedades_cronicas"] ?? '';
-          medicamentosController.text = d["medicamentos_actuales"] ?? '';
+
+          // Medicamentos: parsear si/no + detalle
+          final parsedMed = _splitSiDetalle(d["medicamentos_actuales"]);
+          medicamentosSiNo = parsedMed['siNo'];
+          medicamentosController.text = parsedMed['detalle'] ?? '';
+
           antecedentesController.text = d["antecedentes_medicos"] ?? '';
           observacionesController.text = d["observaciones"] ?? '';
           pesoController.text = (d["peso"] ?? '').toString();
           alturaController.text = (d["altura"] ?? '').toString();
-          diabetesController.text = d["diabetes"] ?? '';
-          hipertensionController.text = d["hipertension"] ?? '';
-          cirugiasController.text = d["cirugias_previas"] ?? '';
+
+          // Diabetes
+          final parsedDiab = _splitSiDetalle(d["diabetes"]);
+          diabetesSiNo = parsedDiab['siNo'];
+          diabetesDesdeController.text = parsedDiab['detalle'] ?? '';
+
+          // Hipertensión
+          final parsedHip = _splitSiDetalle(d["hipertension"]);
+          hipertensionSiNo = parsedHip['siNo'];
+          hipertensionDesdeController.text = parsedHip['detalle'] ?? '';
+
+          // Cirugías
+          final parsedCir = _splitSiDetalle(d["cirugias_previas"]);
+          cirugiasSiNo = parsedCir['siNo'];
+          cirugiasController.text = parsedCir['detalle'] ?? '';
+
+          // Tabaquismo y alcohol
           tabaquismoController.text = d["tabaquismo"] ?? '';
           alcoholismoController.text = d["alcoholismo"] ?? '';
+          fumador = _normalizeSiNo(d["fumador"]);
+          consumoAlcohol = _normalizeSiNo(d["consumo_alcohol"]);
+
           alimentacionController.text = d["alimentacion"] ?? '';
           ejercicioController.text = d["ejercicio"] ?? '';
+
           padreController.text = d["padre"] ?? '';
           madreController.text = d["madre"] ?? '';
           hermanosController.text = d["hermanos"] ?? '';
           padecimientoActualController.text = d["padecimiento_actual"] ?? '';
-          fumador = d["fumador"]?.toString() ?? '';
-          consumoAlcohol = d["consumo_alcohol"]?.toString() ?? '';
+
+          // Guardar originales (manteniendo los formatos originales)
           datosOriginales = Map<String, dynamic>.from(d);
+          // normalizar para comparaciones
+          datosOriginales["fumador"] = fumador;
+          datosOriginales["consumo_alcohol"] = consumoAlcohol;
           cargando = false;
         });
       } else {
-        // no hay datos: controllers quedan vacíos y guardamos defaults
         setState(() {
           datosOriginales = {};
           cargando = false;
@@ -161,8 +256,8 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
     alturaController.dispose();
 
     // Patológicos / no patológicos
-    diabetesController.dispose();
-    hipertensionController.dispose();
+    diabetesDesdeController.dispose();
+    hipertensionDesdeController.dispose();
     cirugiasController.dispose();
     tabaquismoController.dispose();
     alcoholismoController.dispose();
@@ -178,6 +273,19 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
     padecimientoActualController.dispose();
 
     super.dispose();
+  }
+
+  // Combina selector Sí/No + detalle en una cadena para enviar/ comparar
+  String _combineSiDetalle(String? siNo, TextEditingController detalleController) {
+    final d = detalleController.text.trim();
+    if (siNo == null) {
+      return d;
+    }
+    if (siNo == 'Sí') {
+      return d.isEmpty ? 'Sí' : 'Sí - $d';
+    } else {
+      return 'No';
+    }
   }
 
   // 🔹 Nuevo diseño de alerta uniforme
@@ -198,6 +306,8 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
                 imagen,
                 height: 100,
                 width: 100,
+                errorBuilder: (context, error, stackTrace) =>
+                    Icon(Icons.broken_image, size: 100, color: Colors.grey),
               ),
               const SizedBox(height: 10),
               Text(
@@ -237,12 +347,18 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
 
   bool _camposObligatoriosLlenos() {
     return tipoSangreController.text.isNotEmpty &&
-        alergiasController.text.isNotEmpty &&
+        (alergiasSiNo == 'Sí' ? alergiasController.text.isNotEmpty : true) &&
         enfermedadesController.text.isNotEmpty;
   }
 
   bool _seModificoAlgo() {
-    // compara los campos nuevos con los datos originales
+    // compara los campos nuevos con los datos originales (usando las combinaciones)
+    final currDiabetes = _combineSiDetalle(diabetesSiNo, diabetesDesdeController);
+    final currHip = _combineSiDetalle(hipertensionSiNo, hipertensionDesdeController);
+    final currAlergias = alergiasSiNo == null ? alergiasController.text : (alergiasSiNo == 'Sí' ? 'Sí - ${alergiasController.text.trim()}' : 'No');
+    final currMedic = medicamentosSiNo == null ? medicamentosController.text : (medicamentosSiNo == 'Sí' ? 'Sí - ${medicamentosController.text.trim()}' : 'No');
+    final currCirugias = cirugiasSiNo == null ? cirugiasController.text : (cirugiasSiNo == 'Sí' ? 'Sí - ${cirugiasController.text.trim()}' : 'No');
+
     return nombreController.text != (datosOriginales["nombre"] ?? "") ||
         edadController.text != (datosOriginales["edad"]?.toString() ?? "") ||
         sexoController.text != (datosOriginales["sexo"] ?? "") ||
@@ -251,16 +367,16 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
         telefonoController.text != (datosOriginales["telefono"] ?? "") ||
         direccionController.text != (datosOriginales["direccion"] ?? "") ||
         tipoSangreController.text != (datosOriginales["tipo_sangre"] ?? "") ||
-        alergiasController.text != (datosOriginales["alergias"] ?? "") ||
+        currAlergias != (datosOriginales["alergias"] ?? "") ||
         enfermedadesController.text != (datosOriginales["enfermedades_cronicas"] ?? "") ||
-        medicamentosController.text != (datosOriginales["medicamentos_actuales"] ?? "") ||
+        currMedic != (datosOriginales["medicamentos_actuales"] ?? "") ||
         antecedentesController.text != (datosOriginales["antecedentes_medicos"] ?? "") ||
         observacionesController.text != (datosOriginales["observaciones"] ?? "") ||
         pesoController.text != (datosOriginales["peso"] ?? "") ||
         alturaController.text != (datosOriginales["altura"] ?? "") ||
-        diabetesController.text != (datosOriginales["diabetes"] ?? "") ||
-        hipertensionController.text != (datosOriginales["hipertension"] ?? "") ||
-        cirugiasController.text != (datosOriginales["cirugias_previas"] ?? "") ||
+        currDiabetes != (datosOriginales["diabetes"] ?? "") ||
+        currHip != (datosOriginales["hipertension"] ?? "") ||
+        currCirugias != (datosOriginales["cirugias_previas"] ?? "") ||
         tabaquismoController.text != (datosOriginales["tabaquismo"] ?? "") ||
         alcoholismoController.text != (datosOriginales["alcoholismo"] ?? "") ||
         alimentacionController.text != (datosOriginales["alimentacion"] ?? "") ||
@@ -278,7 +394,7 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
       _mostrarDialogo(
         titulo: "Campos obligatorios",
         mensaje:
-            "Completa los campos obligatorios: Tipo de sangre, Alergias y Enfermedades crónicas.",
+            "Completa los campos obligatorios: Tipo de sangre, Alergias (si aplica) y Enfermedades crónicas.",
         imagen: "img/Imagen5.png",
         colorTitulo: Colors.red,
       );
@@ -296,6 +412,13 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
     }
 
     try {
+      // preparar valores combinados para enviar
+      final diabetesEnviar = _combineSiDetalle(diabetesSiNo, diabetesDesdeController);
+      final hipertensionEnviar = _combineSiDetalle(hipertensionSiNo, hipertensionDesdeController);
+      final alergiasEnviar = alergiasSiNo == null ? alergiasController.text.trim() : (alergiasSiNo == 'Sí' ? 'Sí - ${alergiasController.text.trim()}' : 'No');
+      final medicamentosEnviar = medicamentosSiNo == null ? medicamentosController.text.trim() : (medicamentosSiNo == 'Sí' ? 'Sí - ${medicamentosController.text.trim()}' : 'No');
+      final cirugiasEnviar = cirugiasSiNo == null ? cirugiasController.text.trim() : (cirugiasSiNo == 'Sí' ? 'Sí - ${cirugiasController.text.trim()}' : 'No');
+
       final response = await http.post(
         Uri.parse("http://localhost/doctime/BD/datos_clinicos.php"),
         body: {
@@ -314,18 +437,18 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
 
           // Clínicos / antecedentes
           "tipo_sangre": tipoSangreController.text,
-          "alergias": alergiasController.text,
+          "alergias": alergiasEnviar,
           "enfermedades_cronicas": enfermedadesController.text,
-          "medicamentos_actuales": medicamentosController.text,
+          "medicamentos_actuales": medicamentosEnviar,
           "antecedentes_medicos": antecedentesController.text,
           "observaciones": observacionesController.text,
           "peso": pesoController.text,
           "altura": alturaController.text,
 
           // Patológicos
-          "diabetes": diabetesController.text,
-          "hipertension": hipertensionController.text,
-          "cirugias_previas": cirugiasController.text,
+          "diabetes": diabetesEnviar,
+          "hipertension": hipertensionEnviar,
+          "cirugias_previas": cirugiasEnviar,
 
           // No patológicos
           "tabaquismo": tabaquismoController.text,
@@ -347,10 +470,8 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
         },
       );
 
-      // debug: imprimir status y body
       print('guardarDatosClinicos HTTP ${response.statusCode}: ${response.body}');
 
-      // proteger contra body no-JSON
       final body = response.body?.trim() ?? '';
       if (!body.startsWith('{') && !body.startsWith('[')) {
         _mostrarDialogo(
@@ -374,7 +495,6 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
       }
 
       if (data["success"] == true) {
-        // si el endpoint devuelve "data", usarlo para rellenar inmediatamente
         if (data["data"] != null) {
           final d = data["data"];
           setState(() {
@@ -387,20 +507,40 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
             direccionController.text = d["direccion"] ?? "";
 
             tipoSangreController.text = d["tipo_sangre"] ?? "";
-            alergiasController.text = d["alergias"] ?? "";
+
+            // reparsear lo guardado
+            final parsedAler = _splitSiDetalle(d["alergias"]);
+            alergiasSiNo = parsedAler['siNo'];
+            alergiasController.text = parsedAler['detalle'] ?? '';
+
             enfermedadesController.text = d["enfermedades_cronicas"] ?? "";
-            medicamentosController.text = d["medicamentos_actuales"] ?? "";
+
+            final parsedMed = _splitSiDetalle(d["medicamentos_actuales"]);
+            medicamentosSiNo = parsedMed['siNo'];
+            medicamentosController.text = parsedMed['detalle'] ?? '';
+
             antecedentesController.text = d["antecedentes_medicos"] ?? "";
             observacionesController.text = d["observaciones"] ?? "";
             pesoController.text = d["peso"]?.toString() ?? "";
             alturaController.text = d["altura"]?.toString() ?? "";
 
-            diabetesController.text = d["diabetes"] ?? "";
-            hipertensionController.text = d["hipertension"] ?? "";
-            cirugiasController.text = d["cirugias_previas"] ?? "";
+            final parsedDiab = _splitSiDetalle(d["diabetes"]);
+            diabetesSiNo = parsedDiab['siNo'];
+            diabetesDesdeController.text = parsedDiab['detalle'] ?? '';
+
+            final parsedHip = _splitSiDetalle(d["hipertension"]);
+            hipertensionSiNo = parsedHip['siNo'];
+            hipertensionDesdeController.text = parsedHip['detalle'] ?? '';
+
+            final parsedCir = _splitSiDetalle(d["cirugias_previas"]);
+            cirugiasSiNo = parsedCir['siNo'];
+            cirugiasController.text = parsedCir['detalle'] ?? '';
 
             tabaquismoController.text = d["tabaquismo"] ?? "";
             alcoholismoController.text = d["alcoholismo"] ?? "";
+            fumador = _normalizeSiNo(d["fumador"]);
+            consumoAlcohol = _normalizeSiNo(d["consumo_alcohol"]);
+
             alimentacionController.text = d["alimentacion"] ?? "";
             ejercicioController.text = d["ejercicio"] ?? "";
 
@@ -410,12 +550,11 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
 
             padecimientoActualController.text = d["padecimiento_actual"] ?? "";
 
-            fumador = d["fumador"] ?? "";
-            consumoAlcohol = d["consumo_alcohol"] ?? "";
             datosOriginales = Map<String, dynamic>.from(d);
+            datosOriginales["fumador"] = fumador;
+            datosOriginales["consumo_alcohol"] = consumoAlcohol;
           });
         } else {
-          // adicional: refrescar desde el endpoint obtenerDatosClinicos
           await obtenerDatosClinicos();
         }
 
@@ -426,7 +565,6 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
           colorTitulo: Colors.green,
         );
       } else {
-        // mostrar mensaje de error con detalle si existe
         final errDetalle = data["error_stmt"] ?? data["error_conn"] ?? data["message"] ?? response.body;
         _mostrarDialogo(
           titulo: "Error al guardar",
@@ -462,6 +600,31 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
     );
   }
 
+  Future<void> _pickFechaNacimiento(BuildContext context) async {
+    DateTime initial = DateTime.now();
+    try {
+      if (fechaNacimientoController.text.isNotEmpty) {
+        final parts = fechaNacimientoController.text.split(RegExp(r'[-/]'));
+        if (parts.length >= 3) {
+          final d = int.tryParse(parts[0]) ?? int.tryParse(parts.last) ?? initial.day;
+          final m = int.tryParse(parts[1]) ?? initial.month;
+          final y = int.tryParse(parts[2]) ?? initial.year;
+          initial = DateTime(y, m, d);
+        }
+      }
+    } catch (_) {}
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      fechaNacimientoController.text = "${picked.day.toString().padLeft(2,'0')}/${picked.month.toString().padLeft(2,'0')}/${picked.year}";
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -487,14 +650,14 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
                             children: [
                               Row(
                                 children: [
-                                  Container(
+                                  SizedBox(
                                     width: 50 * scale,
                                     height: 50 * scale,
-                                    decoration: const BoxDecoration(
-                                      image: DecorationImage(
-                                        image: AssetImage("img/logo.png"),
-                                        fit: BoxFit.contain,
-                                      ),
+                                    child: Image.asset(
+                                      "img/logo.png",
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (context, error, stackTrace) =>
+                                          Icon(Icons.broken_image, size: 50 * scale, color: Colors.grey),
                                     ),
                                   ),
                                   SizedBox(width: 8 * scale),
@@ -532,14 +695,14 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
                                     ),
                                   );
                                 },
-                                child: Container(
+                                child: SizedBox(
                                   width: 50 * scale,
                                   height: 50 * scale,
-                                  decoration: const BoxDecoration(
-                                    image: DecorationImage(
-                                      image: AssetImage("img/Imagen2.png"),
-                                      fit: BoxFit.contain,
-                                    ),
+                                  child: Image.asset(
+                                    "img/Imagen2.png",
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        Icon(Icons.broken_image, size: 50 * scale, color: Colors.grey),
                                   ),
                                 ),
                               ),
@@ -560,31 +723,357 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
                           // Sección 1: Identificación
                           _seccionTitle("1. Datos de Identificación", scale),
                           _campo("Nombre del paciente", nombreController, scale),
-                          _campo("Edad", edadController, scale,
-                              keyboardType: TextInputType.number),
-                          _campo("Sexo", sexoController, scale),
-                          _campo("Fecha de nacimiento", fechaNacimientoController, scale),
+
+                          // Edad: solo números
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12 * scale),
+                            child: TextFormField(
+                              controller: edadController,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                              decoration: InputDecoration(
+                                labelText: 'Edad',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10 * scale),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // SEXO: Dropdown seguro (value null si vacío)
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12 * scale),
+                            child: DropdownButtonFormField<String>(
+                              value: _safeDropdownValue(sexoController.text, [
+                                'Masculino',
+                                'Femenino',
+                                'Otro',
+                                'Prefiero no decir'
+                              ]),
+                              items: [
+                                'Masculino',
+                                'Femenino',
+                                'Otro',
+                                'Prefiero no decir'
+                              ].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                              onChanged: (v) {
+                                setState(() {
+                                  sexoController.text = v ?? '';
+                                });
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Sexo',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10 * scale),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // Fecha de nacimiento: campo de texto normal
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12 * scale),
+                            child: TextFormField(
+                              controller: fechaNacimientoController,
+                              keyboardType: TextInputType.datetime,
+                              decoration: InputDecoration(
+                                labelText: 'Fecha de nacimiento (DD/MM/YYYY)',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10 * scale),
+                                ),
+                              ),
+                            ),
+                          ),
+
                           _campo("CURP", curpController, scale),
-                          _campo("Teléfono", telefonoController, scale,
-                              keyboardType: TextInputType.phone),
+
+                          // Teléfono: solo números
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12 * scale),
+                            child: TextFormField(
+                              controller: telefonoController,
+                              keyboardType: TextInputType.phone,
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                              decoration: InputDecoration(
+                                labelText: 'Teléfono',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10 * scale),
+                                ),
+                              ),
+                            ),
+                          ),
+
                           _campo("Dirección", direccionController, scale, maxLines: 2),
 
                           SizedBox(height: 12 * scale),
 
                           // Sección: Antecedentes personales patológicos
                           _seccionTitle("3. Antecedentes Personales Patológicos", scale),
-                          _campo("Diabetes (Sí/No/Desde cuándo)", diabetesController, scale),
-                          _campo("Hipertensión (Sí/No/Desde cuándo)", hipertensionController, scale),
-                          _campo("Alergias (medicamentosas, alimentarias, ambientales) *", alergiasController, scale, maxLines: 2),
-                          _campo("Cirugías previas (cuáles y fechas aproximadas)", cirugiasController, scale, maxLines: 2),
-                          _campo("Medicamentos actuales (nombre, dosis, frecuencia)", medicamentosController, scale, maxLines: 2),
+
+                          // Diabetes: selector + desde cuándo
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12 * scale),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                DropdownButtonFormField<String>(
+                                  value: _safeDropdownValue(diabetesSiNo, ['Sí', 'No']),
+                                  items: ['Sí', 'No'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                                  onChanged: (v) {
+                                    setState(() {
+                                      diabetesSiNo = v;
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    labelText: 'Diabetes (Sí/No)',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                TextFormField(
+                                  controller: diabetesDesdeController,
+                                  maxLines: 1,
+                                  enabled: diabetesSiNo == 'Sí',
+                                  decoration: InputDecoration(
+                                    labelText: 'Desde cuándo (ej. 2015, 01/2015, tratamiento)',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Hipertensión: selector + desde cuándo
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12 * scale),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                DropdownButtonFormField<String>(
+                                  value: _safeDropdownValue(hipertensionSiNo, ['Sí', 'No']),
+                                  items: ['Sí', 'No'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                                  onChanged: (v) {
+                                    setState(() {
+                                      hipertensionSiNo = v;
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    labelText: 'Hipertensión (Sí/No)',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                TextFormField(
+                                  controller: hipertensionDesdeController,
+                                  maxLines: 1,
+                                  enabled: hipertensionSiNo == 'Sí',
+                                  decoration: InputDecoration(
+                                    labelText: 'Desde cuándo (ej. año / tratamiento)',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Alergias: selector + detalle
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12 * scale),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                DropdownButtonFormField<String>(
+                                  value: _safeDropdownValue(alergiasSiNo, ['Sí', 'No']),
+                                  items: ['Sí', 'No'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                                  onChanged: (v) {
+                                    setState(() {
+                                      alergiasSiNo = v;
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    labelText: '¿Tiene alergias?',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                TextFormField(
+                                  controller: alergiasController,
+                                  maxLines: 2,
+                                  enabled: alergiasSiNo == 'Sí',
+                                  decoration: InputDecoration(
+                                    labelText: 'Detalle alergias (medicamentos, alimentos, etc.)',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Cirugías: selector + detalle
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12 * scale),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                DropdownButtonFormField<String>(
+                                  value: _safeDropdownValue(cirugiasSiNo, ['Sí', 'No']),
+                                  items: ['Sí', 'No'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                                  onChanged: (v) {
+                                    setState(() {
+                                      cirugiasSiNo = v;
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    labelText: '¿Cirugías previas?',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                TextFormField(
+                                  controller: cirugiasController,
+                                  maxLines: 2,
+                                  enabled: cirugiasSiNo == 'Sí',
+                                  decoration: InputDecoration(
+                                    labelText: 'Detalle cirugías (cuáles y fechas)',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Medicamentos actuales: selector + detalle
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12 * scale),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                DropdownButtonFormField<String>(
+                                  value: _safeDropdownValue(medicamentosSiNo, ['Sí', 'No']),
+                                  items: ['Sí', 'No'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                                  onChanged: (v) {
+                                    setState(() {
+                                      medicamentosSiNo = v;
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    labelText: '¿Toma medicamentos actualmente?',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                TextFormField(
+                                  controller: medicamentosController,
+                                  maxLines: 2,
+                                  enabled: medicamentosSiNo == 'Sí',
+                                  decoration: InputDecoration(
+                                    labelText: 'Detalle medicamentos (nombre, dosis, frecuencia)',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
 
                           SizedBox(height: 12 * scale),
 
                           // Sección: Antecedentes no patológicos
                           _seccionTitle("4. Antecedentes no patológicos", scale),
-                          _campo("Tabaquismo (Sí/No, cuánto y por cuánto tiempo)", tabaquismoController, scale),
-                          _campo("Alcoholismo (Sí/No, frecuencia y cantidad)", alcoholismoController, scale),
+
+                          // FUMADOR: selector Sí/No + detalle habilitado sólo si es "Sí"
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12 * scale),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                DropdownButtonFormField<String>(
+                                  value: _safeDropdownValue(fumador, ['Sí', 'No']),
+                                  items: ['Sí', 'No'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                                  onChanged: (v) {
+                                    setState(() {
+                                      fumador = v;
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    labelText: '¿Es fumador?',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                TextFormField(
+                                  controller: tabaquismoController,
+                                  maxLines: 1,
+                                  enabled: fumador == 'Sí',
+                                  decoration: InputDecoration(
+                                    labelText: 'Detalle tabaquismo (cantidad / tiempo)',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // ALCOHOL: selector Sí/No + detalle habilitado sólo si es "Sí"
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12 * scale),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                DropdownButtonFormField<String>(
+                                  value: _safeDropdownValue(consumoAlcohol, ['Sí', 'No']),
+                                  items: ['Sí', 'No'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                                  onChanged: (v) {
+                                    setState(() {
+                                      consumoAlcohol = v;
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    labelText: '¿Consume alcohol?',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                TextFormField(
+                                  controller: alcoholismoController,
+                                  maxLines: 1,
+                                  enabled: consumoAlcohol == 'Sí',
+                                  decoration: InputDecoration(
+                                    labelText: 'Detalle consumo de alcohol (frecuencia / cantidad)',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10 * scale),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
                           _campo("Alimentación (tipo de dieta, número de comidas)", alimentacionController, scale),
                           _campo("Ejercicio (tipo, frecuencia y duración)", ejercicioController, scale),
 
@@ -606,10 +1095,36 @@ class _DetalleDatosClinicosPageState extends State<DetalleDatosClinicosPage> {
 
                           // Otros datos clínicos y observaciones
                           _seccionTitle("Otros datos clínicos", scale),
-                          _campo("Tipo de sangre *", tipoSangreController, scale),
+
+                          // TIPO DE SANGRE: dropdown
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12 * scale),
+                            child: DropdownButtonFormField<String>(
+                              value: _safeDropdownValue(tipoSangreController.text, [
+                                'A+','A-','B+','B-','AB+','AB-','O+','O-','Desconocido'
+                              ]),
+                              items: [
+                                'A+','A-','B+','B-','AB+','AB-','O+','O-','Desconocido'
+                              ].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                              onChanged: (v) {
+                                setState(() {
+                                  tipoSangreController.text = v ?? '';
+                                });
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Tipo de sangre *',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10 * scale),
+                                ),
+                              ),
+                            ),
+                          ),
+
                           _campo("Enfermedades crónicas *", enfermedadesController, scale, maxLines: 2),
                           _campo("Antecedentes médicos", antecedentesController, scale, maxLines: 2),
                           _campo("Observaciones", observacionesController, scale, maxLines: 2),
+
+                          // Peso / Altura
                           _campo("Peso (kg) - opcional", pesoController, scale, keyboardType: TextInputType.number),
                           _campo("Altura (m) - opcional", alturaController, scale, keyboardType: TextInputType.number),
 
