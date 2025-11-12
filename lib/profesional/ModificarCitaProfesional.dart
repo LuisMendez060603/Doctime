@@ -114,8 +114,9 @@ class _ModificarCitaProfesionalState extends State<ModificarCitaProfesional> {
           Center(
             child: GestureDetector(
               onTap: () {
-                String correoProfesional = 'mendez@gmail.com'; // Reemplaza con datos reales
-                String passwordProfesional = '1234';
+                // Usar las credenciales del profesional activo en lugar de valores hardcodeados
+                final correoProfesional = widget.correo;
+                final passwordProfesional = widget.password;
 
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
