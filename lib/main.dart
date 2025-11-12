@@ -143,7 +143,7 @@ class MyHomePage extends StatelessWidget {
           const SizedBox(height: 20),
 
           const Text(
-            '¿Requieres Atención Médica?',
+            '¿Requieres Atención?',
             style: TextStyle(
               color: Color(0xFF0077C2),
               fontSize: 24,
